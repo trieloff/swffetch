@@ -1,4 +1,4 @@
-# `ffetch` – `fetch` for Franklin
+# `ffetch` – `fetch` for Edge Delivery Services (Franklin)
 
 `ffetch` is a small wrapper around the JavaScript `fetch` function that helps you deal with the Franklin Content API when
 building a composable application. It makes it easy to `fetch` content from 
