@@ -1,9 +1,9 @@
 # `ffetch` – `fetch` for Edge Delivery Services (Franklin)
 
-`ffetch` is a small wrapper around the JavaScript `fetch` function that helps you deal with the Franklin Content API when
+`ffetch` is a small wrapper around the JavaScript `fetch` function that helps you deal with the AEM (.live) Content API when
 building a composable application. It makes it easy to `fetch` content from 
-[a Franklin Index](https://www.hlx.live/developer/indexing), apply lazy pagination, follow links to pages, and even pull
-[page metadata](https://www.hlx.live/developer/block-collection/metadata). With `ffetch` you get all the ease of creating
+[an Index](https://www.aem.live/developer/indexing), apply lazy pagination, follow links to pages, and even pull
+[page metadata](https://www.aem.live/developer/block-collection/metadata). With `ffetch` you get all the ease of creating
 a headless application without the peformance baggage of headless SDKs and the complexity of headless APIs.
 
 ## Why `ffetch`?
@@ -53,7 +53,7 @@ But if you prefer to use `.map` and `.filter`, you can do this right on the gene
 ```javascript
 const someentries = ffetch('/query-index.json')
   .map(({title}) => title)
-  .filter(title => title.indexOf('Franklin'));
+  .filter(title => title.indexOf('Helix'));
 for await (title of someentries) {
   console.log(title);
 }
@@ -71,7 +71,7 @@ If you need to skip a couple of entries, then `.slice(start, end)` is your frien
 
 ### Work with multi-sheets
 
-Franklin JSON resources can contain multiple sheets. With `.sheet(name)` you can specify, which sheet you want to access.
+AEM JSON resources can contain multiple sheets. With `.sheet(name)` you can specify, which sheet you want to access.
 
 ```javascript
 const entries = ffetch('/query-index.json')
@@ -84,7 +84,7 @@ for await (const entry of entries) {
 
 ### Work with HTML pages
 
-In Franklin, the Hypertext is the API, so you can get a [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document) for
+In AEM, the Hypertext is the API, so you can get a [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document) for
 each HTML document referenced from an index sheet.
 
 ```javascript
