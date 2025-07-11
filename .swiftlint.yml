@@ -1,0 +1,20 @@
+included:
+  - Sources
+  - Tests
+
+# You can add more rules or customize as needed.
+# For example, to enable all opt-in rules:
+# opt_in_rules:
+#   - all
+
+# Uncomment below to treat warnings as errors (recommended for CI)
+# warning_threshold: 0
+
+# Exclude generated or dependency files if needed
+excluded:
+  - .build
+  - Carthage
+  - Pods
+  - .swiftpm
+  - .git
+  - .github
