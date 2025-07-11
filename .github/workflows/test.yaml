@@ -33,7 +33,6 @@ jobs:
       - name: Lint (SwiftLint)
         if: matrix.os == 'macos-latest'
         run: swiftlint
-        continue-on-error: true
 
       - name: Build
         run: swift build --build-tests
