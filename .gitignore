@@ -3,20 +3,20 @@ node_modules/
 .vscode/
 
 # Swift Package Manager & Xcode
-SwiftFFetch/.build/
-SwiftFFetch/.swiftpm/
-SwiftFFetch/.DS_Store
-SwiftFFetch/DerivedData/
-SwiftFFetch/.xcworkspace/
-SwiftFFetch/xcuserdata/
-SwiftFFetch/*.xcodeproj/project.xcworkspace/
-SwiftFFetch/*.xcodeproj/xcuserdata/
-SwiftFFetch/*.xcodeproj/xcshareddata/
-SwiftFFetch/*.xcodeproj/xcshareddata/WorkspaceSettings.xcsettings
+.build/
+.swiftpm/
+.DS_Store
+DerivedData/
+.xcworkspace/
+xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/xcshareddata/
+*.xcodeproj/xcshareddata/WorkspaceSettings.xcsettings
 
 # SwiftPM/Xcode user data
-SwiftFFetch/.idea/
-SwiftFFetch/*.xcuserstate
+.idea/
+*.xcuserstate
 
 # SwiftPM build logs
-SwiftFFetch/.build-*
+.build-*
