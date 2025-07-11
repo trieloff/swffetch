@@ -158,7 +158,7 @@ extension FFetch {
         do {
             let (data, response) = try await context.httpClient.fetch(
                 resolvedURL,
-                cachePolicy: .useProtocolCachePolicy
+                cacheConfig: context.cacheConfig
             )
 
             if let httpResponse = response as? HTTPURLResponse {

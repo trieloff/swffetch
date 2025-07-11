@@ -90,12 +90,8 @@ internal class FFetchRequestHandler {
         context: FFetchContext,
         continuation: AsyncStream<FFetchEntry>.Continuation
     ) async throws -> FFetchResponse {
-        let cachePolicy: URLRequest.CachePolicy = context.cacheReload
-            ? .reloadIgnoringLocalCacheData
-            : .useProtocolCachePolicy
-
         do {
-            let (data, response) = try await context.httpClient.fetch(url, cachePolicy: cachePolicy)
+            let (data, response) = try await context.httpClient.fetch(url, cacheConfig: context.cacheConfig)
 
             try validateHTTPResponse(response: response, continuation: continuation)
 

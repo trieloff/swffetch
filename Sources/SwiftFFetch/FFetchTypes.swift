@@ -164,9 +164,48 @@ public enum FFetchError: Error, LocalizedError {
     }
 }
 
+/// Cache configuration for FFetch requests
+public struct FFetchCacheConfig {
+    /// The cache policy to use for requests
+    public let policy: URLRequest.CachePolicy
+
+    /// Custom URLCache instance to use (nil uses shared cache)
+    public let cache: URLCache?
+
+    /// Maximum age in seconds for cached responses (overrides server headers)
+    public let maxAge: TimeInterval?
+
+    /// Whether to ignore server cache control headers
+    public let ignoreServerCacheControl: Bool
+
+    public init(
+        policy: URLRequest.CachePolicy = .useProtocolCachePolicy,
+        cache: URLCache? = nil,
+        maxAge: TimeInterval? = nil,
+        ignoreServerCacheControl: Bool = false
+    ) {
+        self.policy = policy
+        self.cache = cache
+        self.maxAge = maxAge
+        self.ignoreServerCacheControl = ignoreServerCacheControl
+    }
+
+    /// Default cache configuration that respects HTTP cache control headers
+    public static let `default` = FFetchCacheConfig()
+
+    /// Cache configuration that ignores cache and always fetches from server
+    public static let noCache = FFetchCacheConfig(policy: .reloadIgnoringLocalCacheData)
+
+    /// Cache configuration that only uses cache and never fetches from server
+    public static let cacheOnly = FFetchCacheConfig(policy: .returnCacheDataDontLoad)
+
+    /// Cache configuration that uses cache if available, otherwise fetches from server
+    public static let cacheElseLoad = FFetchCacheConfig(policy: .returnCacheDataElseLoad)
+}
+
 /// Protocol for HTTP client abstraction
 public protocol FFetchHTTPClient {
-    func fetch(_ url: URL, cachePolicy: URLRequest.CachePolicy) async throws -> (Data, URLResponse)
+    func fetch(_ url: URL, cacheConfig: FFetchCacheConfig) async throws -> (Data, URLResponse)
 }
 
 /// Protocol for HTML parsing abstraction
@@ -174,23 +213,72 @@ public protocol FFetchHTMLParser {
     func parse(_ html: String) throws -> Document
 }
 
-/// Default HTTP client implementation using URLSession
+/// Default HTTP client implementation using URLSession with proper caching
 public struct DefaultFFetchHTTPClient: FFetchHTTPClient {
     private let session: URLSession
+    private let defaultCache: URLCache
 
-    public init(session: URLSession = .shared) {
-        self.session = session
+    public init(session: URLSession? = nil, cache: URLCache? = nil) {
+        // Create a shared cache instance if none provided
+        self.defaultCache = cache ?? {
+            let memoryCapacity = 50 * 1024 * 1024  // 50MB memory cache
+            let diskCapacity = 100 * 1024 * 1024   // 100MB disk cache
+            return URLCache(memoryCapacity: memoryCapacity, diskCapacity: diskCapacity)
+        }()
+
+        // Use provided session or create one with proper cache configuration
+        if let session = session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.urlCache = self.defaultCache
+            config.requestCachePolicy = .useProtocolCachePolicy
+            self.session = URLSession(configuration: config)
+        }
     }
 
     public func fetch(
         _ url: URL,
-        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+        cacheConfig: FFetchCacheConfig = .default
     ) async throws -> (Data, URLResponse) {
         var request = URLRequest(url: url)
-        request.cachePolicy = cachePolicy
+        request.cachePolicy = cacheConfig.policy
+
+        // Use custom cache if specified, otherwise use session's cache
+        let sessionToUse: URLSession
+        if let customCache = cacheConfig.cache {
+            let config = URLSessionConfiguration.default
+            config.urlCache = customCache
+            config.requestCachePolicy = cacheConfig.policy
+            sessionToUse = URLSession(configuration: config)
+        } else {
+            sessionToUse = session
+        }
 
         do {
-            return try await session.data(for: request)
+            let (data, response) = try await sessionToUse.data(for: request)
+
+            // Apply custom cache control if specified
+            if let maxAge = cacheConfig.maxAge,
+               let httpResponse = response as? HTTPURLResponse,
+               cacheConfig.ignoreServerCacheControl {
+
+                // Create a new response with custom cache control
+                let headers = httpResponse.allHeaderFields.merging([
+                    "Cache-Control": "max-age=\(Int(maxAge))"
+                ]) { _, new in new }
+
+                if let modifiedResponse = HTTPURLResponse(
+                    url: httpResponse.url!,
+                    statusCode: httpResponse.statusCode,
+                    httpVersion: "HTTP/1.1",
+                    headerFields: headers as? [String: String]
+                ) {
+                    return (data, modifiedResponse)
+                }
+            }
+
+            return (data, response)
         } catch {
             throw FFetchError.networkError(error)
         }
@@ -215,8 +303,11 @@ public struct FFetchContext {
     /// Size of chunks to fetch during pagination
     public var chunkSize: Int
 
-    /// Whether to reload cache
+    /// Whether to reload cache (deprecated - use cacheConfig instead)
     public var cacheReload: Bool
+
+    /// Cache configuration for HTTP requests
+    public var cacheConfig: FFetchCacheConfig
 
     /// Name of the sheet to query (for multi-sheet responses)
     public var sheetName: String?
@@ -241,6 +332,7 @@ public struct FFetchContext {
     public init(
         chunkSize: Int = 255,
         cacheReload: Bool = false,
+        cacheConfig: FFetchCacheConfig? = nil,
         sheetName: String? = nil,
         httpClient: FFetchHTTPClient = DefaultFFetchHTTPClient(),
         htmlParser: FFetchHTMLParser = DefaultFFetchHTMLParser(),
@@ -250,6 +342,12 @@ public struct FFetchContext {
     ) {
         self.chunkSize = chunkSize
         self.cacheReload = cacheReload
+        // If cacheConfig is not provided, derive from cacheReload for backward compatibility
+        if let cacheConfig = cacheConfig {
+            self.cacheConfig = cacheConfig
+        } else {
+            self.cacheConfig = cacheReload ? .noCache : .default
+        }
         self.sheetName = sheetName
         self.httpClient = httpClient
         self.htmlParser = htmlParser

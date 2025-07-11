@@ -120,21 +120,28 @@ extension FFetch {
         return FFetch(url: url, context: newContext, upstream: upstream)
     }
 
+    /// Configure cache behavior for requests
+    /// - Parameter config: Cache configuration to use
+    /// - Returns: New FFetch instance with cache configuration
+    public func cache(_ config: FFetchCacheConfig) -> FFetch {
+        var newContext = context
+        newContext.cacheConfig = config
+        // Update cacheReload for backward compatibility
+        newContext.cacheReload = (config.policy == .reloadIgnoringLocalCacheData)
+        return FFetch(url: url, context: newContext, upstream: upstream)
+    }
+
     /// Force cache reload for requests
     /// - Returns: New FFetch instance with cache reload enabled
     public func reloadCache() -> FFetch {
-        var newContext = context
-        newContext.cacheReload = true
-        return FFetch(url: url, context: newContext, upstream: upstream)
+        return cache(.noCache)
     }
 
     /// Enable cache reloading (backward compatibility)
     /// - Parameter reload: Whether to reload cache
     /// - Returns: New FFetch instance with cache reload setting
     public func withCacheReload(_ reload: Bool = true) -> FFetch {
-        var newContext = context
-        newContext.cacheReload = reload
-        return FFetch(url: url, context: newContext, upstream: upstream)
+        return cache(reload ? .noCache : .default)
     }
 
     /// Set maximum concurrency for operations (backward compatibility)

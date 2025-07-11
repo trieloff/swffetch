@@ -14,6 +14,7 @@ SwiftFFetch is a Swift library for fetching and processing content from AEM (.li
 - **Async/Await Support**: Uses Swift concurrency for efficient, modern code.
 - **Pagination**: Handles paginated endpoints seamlessly.
 - **Composable**: Chainable methods for mapping, filtering, and transforming content.
+- **HTTP Caching**: Intelligent caching with respect for HTTP cache control headers.
 - **Sheet Selection**: Access specific sheets in multi-sheet JSON resources.
 - **Extensible**: Easily integrate with your own models and workflows.
 
@@ -48,6 +49,107 @@ print(firstEntry?["title"] as? String ?? "")
 ```
 
 ### Get All Entries as an Array
+
+```swift
+let allEntries = try await FFetch(url: "https://example.com/query-index.json").all()
+print("Total entries: \(allEntries.count)")
+```
+
+## HTTP Caching
+
+SwiftFFetch includes comprehensive HTTP caching support that respects server cache control headers by default and allows for custom cache configurations.
+
+### Default Caching Behavior
+
+By default, SwiftFFetch uses a shared memory cache and respects HTTP cache control headers:
+
+```swift
+// First request fetches from server
+let entries1 = try await FFetch(url: "https://example.com/api/data.json").all()
+
+// Second request uses cache if server sent appropriate cache headers
+let entries2 = try await FFetch(url: "https://example.com/api/data.json").all()
+```
+
+### Cache Configuration
+
+Use the `.cache()` method to configure caching behavior:
+
+```swift
+// Always fetch fresh data (bypass cache)
+let freshData = try await FFetch(url: "https://example.com/api/data.json")
+    .cache(.noCache)
+    .all()
+
+// Only use cached data (won't make network request)
+let cachedData = try await FFetch(url: "https://example.com/api/data.json")
+    .cache(.cacheOnly)
+    .all()
+
+// Use cache if available, otherwise load from network
+let data = try await FFetch(url: "https://example.com/api/data.json")
+    .cache(.cacheElseLoad)
+    .all()
+```
+
+### Custom Cache Configuration
+
+Create your own cache with specific memory and disk limits:
+
+```swift
+let customCache = URLCache(
+    memoryCapacity: 10 * 1024 * 1024,  // 10MB
+    diskCapacity: 50 * 1024 * 1024     // 50MB
+)
+
+let customConfig = FFetchCacheConfig(
+    policy: .useProtocolCachePolicy,
+    cache: customCache,
+    maxAge: 3600  // Cache for 1 hour regardless of server headers
+)
+
+let data = try await FFetch(url: "https://example.com/api/data.json")
+    .cache(customConfig)
+    .all()
+```
+
+### Cache Sharing
+
+The cache is reusable between multiple FFetch calls and can be shared with other HTTP requests:
+
+```swift
+// Create a shared cache for your application
+let appCache = URLCache(memoryCapacity: 20 * 1024 * 1024, diskCapacity: 100 * 1024 * 1024)
+let config = FFetchCacheConfig(cache: appCache)
+
+// Use with FFetch
+let ffetchData = try await FFetch(url: "https://api.example.com/data.json")
+    .cache(config)
+    .all()
+
+// Use the same cache with URLSession
+let sessionConfig = URLSessionConfiguration.default
+sessionConfig.urlCache = appCache
+let session = URLSession(configuration: sessionConfig)
+```
+
+### Backward Compatibility
+
+Legacy cache methods are still supported:
+
+```swift
+// Legacy method - maps to .cache(.noCache)
+let freshData = try await FFetch(url: "https://example.com/api/data.json")
+    .reloadCache()
+    .all()
+
+// Legacy method with parameter
+let data = try await FFetch(url: "https://example.com/api/data.json")
+    .withCacheReload(false)  // Uses default cache behavior
+    .all()
+```
+
+## Advanced Usage
 
 ```swift
 let allEntries = try await FFetch(url: "https://example.com/query-index.json").all()

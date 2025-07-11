@@ -15,7 +15,7 @@ class MockHTTPClient: FFetchHTTPClient {
     var responses: [URL: (Data, HTTPURLResponse)] = [:]
     var errors: [URL: Error] = [:]
 
-    func fetch(_ url: URL, cachePolicy: URLRequest.CachePolicy) async throws -> (Data, URLResponse) {
+    func fetch(_ url: URL, cacheConfig: FFetchCacheConfig) async throws -> (Data, URLResponse) {
         // Try exact match first
         if let error = errors[url] {
             throw error
@@ -76,7 +76,7 @@ class AdvancedMockHTTPClient: FFetchHTTPClient {
         requestDelays.append(delay)
     }
 
-    func fetch(_ url: URL, cachePolicy: URLRequest.CachePolicy) async throws -> (Data, URLResponse) {
+    func fetch(_ url: URL, cacheConfig: FFetchCacheConfig) async throws -> (Data, URLResponse) {
         requestCount += 1
 
         // Simulate network delay
