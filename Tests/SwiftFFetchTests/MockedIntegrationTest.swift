@@ -195,21 +195,21 @@ class MockedIntegrationTest: XCTestCase {
     }
 
     func mockDocumentResponses(client: AdvancedMockHTTPClient, count: Int) {
-        for i in 0..<count {
+        for docIndex in 0..<count {
             let html = """
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Document \(i)</title>
-                <meta name="description" content="Description for document \(i)">
-                <meta name="keywords" content="keyword1, keyword2, keyword\(i)">
+                <title>Document \(docIndex)</title>
+                <meta name="description" content="Description for document \(docIndex)">
+                <meta name="keywords" content="keyword1, keyword2, keyword\(docIndex)">
             </head>
             <body>
                 <header>
-                    <h1>Document \(i)</h1>
+                    <h1>Document \(docIndex)</h1>
                 </header>
                 <main>
-                    <p>This is the main content of document \(i).</p>
+                    <p>This is the main content of document \(docIndex).</p>
                     <img src="/images/image-\(i).jpg" alt="Image \(i)">
                     <section>
                         <h2>Section \(i)</h2>
@@ -493,7 +493,12 @@ class MockedIntegrationTest: XCTestCase {
             limit: 10,
             data: Array(0..<10).map { createBlogPostEntry(id: $0) }
         )
-        client.mockResponse(for: "\(baseURL)?offset=0&limit=10", data: try! JSONEncoder().encode(firstResponse))
+        do {
+            let data = try JSONEncoder().encode(firstResponse)
+            client.mockResponse(for: "\(baseURL)?offset=0&limit=10", data: data)
+        } catch {
+            XCTFail("Failed to encode firstResponse: \(error)")
+        }
 
         // Second request fails
         client.mockError(for: "\(baseURL)?offset=10&limit=10", error: URLError(.networkConnectionLost))
@@ -531,7 +536,12 @@ class MockedIntegrationTest: XCTestCase {
             limit: 255,
             data: Array(0..<10).map { createProductEntry(id: $0) }
         )
-        client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=products", data: try! JSONEncoder().encode(productsResponse))
+        do {
+            let data = try JSONEncoder().encode(productsResponse)
+            client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=products", data: data)
+        } catch {
+            XCTFail("Failed to encode productsResponse: \(error)")
+        }
 
         // Mock blog sheet
         let blogResponse = FFetchResponse(
@@ -540,7 +550,12 @@ class MockedIntegrationTest: XCTestCase {
             limit: 255,
             data: Array(0..<5).map { createBlogPostEntry(id: $0) }
         )
-        client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=blog", data: try! JSONEncoder().encode(blogResponse))
+        do {
+            let data = try JSONEncoder().encode(blogResponse)
+            client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=blog", data: data)
+        } catch {
+            XCTFail("Failed to encode blogResponse: \(error)")
+        }
 
         let url = URL(string: baseURL)!
 
