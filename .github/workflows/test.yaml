@@ -6,6 +6,9 @@ on:
   push:
     branches: ["**"]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build & Test (${{ matrix.os }} / Swift ${{ matrix.swift }})
@@ -37,3 +40,15 @@ jobs:
 
       - name: Run Tests
         run: swift test --enable-test-discovery
+
+  update-badge:
+    name: Update Vibe Coded Badge
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip vibe-badge]')"
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: trieloff/vibe-coded-badge-action@main
