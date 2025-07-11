@@ -7,7 +7,7 @@ SwiftFFetch provides a fluent API for working with AEM indices, offering lazy pa
 ## Features
 
 - **🔄 Lazy Pagination**: Efficiently stream large datasets without loading everything into memory
-- **⛓️ Fluent API**: Chain operations like `filter`, `map`, `limit`, and `slice` 
+- **⛓️ Fluent API**: Chain operations like `filter`, `map`, `limit`, and `slice`
 - **⚡ Async/Await**: Built on Swift's modern concurrency model with structured concurrency
 - **📄 Document Following**: Follow references to fetch and parse HTML documents
 - **📊 Multi-sheet Support**: Work with multi-sheet JSON responses
@@ -15,6 +15,64 @@ SwiftFFetch provides a fluent API for working with AEM indices, offering lazy pa
 - **📦 Minimal Dependencies**: Only depends on Foundation and SwiftSoup for HTML parsing
 - **🧪 Full Test Coverage**: Comprehensive test suite with 95%+ code coverage
 - **📖 Complete Documentation**: DocC documentation for all public APIs
+
+## For Users Coming from JavaScript `ffetch`
+
+If you're familiar with the JavaScript [`ffetch`](https://github.com/adobe/ffetch) library, SwiftFFetch will feel very familiar. Both libraries provide a fluent, chainable API for working with AEM indices, including lazy pagination, filtering, mapping, slicing, following document references, and multi-sheet support.
+
+### Key Similarities
+
+| JavaScript                | Swift                                 |
+|---------------------------|---------------------------------------|
+| `ffetch(url)`             | `try ffetch(url)`                     |
+| `.chunks(size)`           | `.chunks(size)`                       |
+| `.sheet(name)`            | `.sheet(name)`                        |
+| `.map(fn)`                | `.map { entry in ... }`               |
+| `.filter(fn)`             | `.filter { entry in ... }`            |
+| `.limit(n)`               | `.limit(n)`                           |
+| `.slice(start, end)`      | `.slice(start, end)`                  |
+| `.follow(field, newField)`| `.follow(field, as: newField)`        |
+| `.all()`                  | `try await .all()`                    |
+| `.first()`                | `try await .first()`                  |
+| `for await (entry of ...)`| `for await entry in ...`              |
+
+### Main Differences
+
+- **Error Handling**: Swift uses `try`/`catch` for error handling, rather than JavaScript's promise rejection.
+- **Async/Await**: Swift's async/await syntax is slightly different (`try await`), and iteration uses `for await entry in ...`.
+- **Type Safety**: Swift provides compile-time type checking, so entries are `[String: Any]` instead of plain objects.
+- **Concurrency**: SwiftFFetch leverages Swift's structured concurrency for performance and safety.
+- **Custom Clients/Parsers**: SwiftFFetch allows you to inject custom HTTP clients and HTML parsers for advanced use cases.
+
+### Example Migration
+
+**JavaScript:**
+```javascript
+const entries = ffetch('/query-index.json')
+  .filter(e => e.published)
+  .map(e => e.title)
+  .limit(10);
+
+for await (const title of entries) {
+  console.log(title);
+}
+```
+
+**Swift:**
+```swift
+let entries = try ffetch("/query-index.json")
+    .filter { entry in (entry["published"] as? Bool) == true }
+    .map { entry in entry["title"] as? String ?? "Untitled" }
+    .limit(10)
+
+for await title in entries {
+    print(title)
+}
+```
+
+For more details on API differences and migration tips, see the [Migration from JavaScript ffetch](#migration-from-javascript-ffetch) section below.
+
+---
 
 ## Installation
 
@@ -100,12 +158,12 @@ let postsWithContent = try await ffetch("/blog-index.json")
     .follow("path", as: "document")
     .map { entry -> [String: Any] in
         var result = entry
-        
+
         if let doc = entry["document"] as? Document {
             result["htmlTitle"] = try? doc.select("title").first()?.text()
             result["firstImage"] = try? doc.select("img").first()?.attr("src")
         }
-        
+
         return result
     }
     .limit(5)
@@ -304,7 +362,7 @@ do {
             true
         }
         .all()
-    
+
     // Process entries
 } catch FFetchError.invalidURL(let url) {
     print("Invalid URL: \(url)")
@@ -385,13 +443,13 @@ let publishedPosts = try await ffetch("/blog-index.json")
             "author": post["author"] as Any,
             "publishedDate": post["publishedDate"] as Any
         ]
-        
+
         if let document = post["document"] as? Document {
             result["htmlTitle"] = try? document.select("title").first()?.text()
             result["excerpt"] = try? document.select("meta[name=description]").first()?.attr("content")
             result["imageCount"] = try? document.select("img").count()
         }
-        
+
         return result
     }
     .limit(10)
@@ -437,24 +495,24 @@ let seoAudit = try await ffetch("/content-index.json")
             "title": content["title"] as Any,
             "path": content["path"] as Any
         ]
-        
+
         if let document = content["document"] as? Document {
             let title = try? document.select("title").first()?.text()
             let description = try? document.select("meta[name=description]").first()?.attr("content")
             let h1Count = try? document.select("h1").count()
             let imageCount = try? document.select("img").count()
             let imagesWithAlt = try? document.select("img[alt]").count()
-            
+
             var seoScore = 0
             if title != nil && !title!.isEmpty { seoScore += 20 }
             if description != nil && !description!.isEmpty { seoScore += 20 }
             if h1Count == 1 { seoScore += 20 }
             if imageCount ?? 0 > 0 && imagesWithAlt == imageCount { seoScore += 40 }
-            
+
             audit["seoScore"] = seoScore
             audit["seoGrade"] = seoScore >= 80 ? "A" : seoScore >= 60 ? "B" : "C"
         }
-        
+
         return audit
     }
     .all()
