@@ -1,8 +1,3 @@
-//
-//  Examples.swift
-//  SwiftFFetch
-//
-//  Created by SwiftFFetch on 2025-07-11.
 //  Copyright © 2025 Adobe. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
