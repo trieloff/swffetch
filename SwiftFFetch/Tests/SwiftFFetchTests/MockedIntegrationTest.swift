@@ -24,7 +24,7 @@ import SwiftSoup
 @testable import SwiftFFetch
 
 /// Integration tests that simulate real-world usage patterns
-final class IntegrationTests: XCTestCase {
+class MockedIntegrationTest: XCTestCase
 
     // MARK: - Mock HTTP Client with Advanced Behavior
 
