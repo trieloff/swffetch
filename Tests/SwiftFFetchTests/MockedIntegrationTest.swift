@@ -210,10 +210,10 @@ class MockedIntegrationTest: XCTestCase {
                 </header>
                 <main>
                     <p>This is the main content of document \(docIndex).</p>
-                    <img src="/images/image-\(i).jpg" alt="Image \(i)">
+                    <img src="/images/image-\(docIndex).jpg" alt="Image \(docIndex)">
                     <section>
-                        <h2>Section \(i)</h2>
-                        <p>Additional content for section \(i).</p>
+                        <h2>Section \(docIndex)</h2>
+                        <p>Additional content for section \(docIndex).</p>
                     </section>
                 </main>
                 <footer>
@@ -223,7 +223,7 @@ class MockedIntegrationTest: XCTestCase {
             </html>
             """
 
-            let url = "https://example.com/blog/post-\(i)"
+            let url = "https://example.com/blog/post-\(docIndex)"
             client.mockResponse(for: url, data: html.data(using: .utf8)!)
         }
     }
