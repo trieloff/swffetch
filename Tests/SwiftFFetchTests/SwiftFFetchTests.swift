@@ -80,7 +80,12 @@ final class SwiftFFetchTests: XCTestCase {
 
     func createMockResponse(total: Int, offset: Int, limit: Int, entries: [FFetchEntry]) -> Data {
         let response = FFetchResponse(total: total, offset: offset, limit: limit, data: entries)
-        return try! JSONEncoder().encode(response)
+        do {
+            return try JSONEncoder().encode(response)
+        } catch {
+            XCTFail("Failed to encode FFetchResponse: \(error)")
+            return Data()
+        }
     }
 
     func createMockEntry(index: Int) -> FFetchEntry {
