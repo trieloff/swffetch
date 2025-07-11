@@ -603,14 +603,14 @@ class MockedIntegrationTest: XCTestCase {
             .chunks(20)
             .filter { post in
                 // Accept true for Bool, NSNumber, or any value that is "truthy"
-                if let b = post["published"] as? Bool {
-                    return b
+                if let isPublished = post["published"] as? Bool {
+                    return isPublished
                 }
-                if let n = post["published"] as? NSNumber {
-                    return n.boolValue
+                if let publishedNumber = post["published"] as? NSNumber {
+                    return publishedNumber.boolValue
                 }
-                if let s = post["published"] as? String {
-                    return s == "true" || s == "1"
+                if let publishedString = post["published"] as? String {
+                    return publishedString == "true" || publishedString == "1"
                 }
                 return false
             }
