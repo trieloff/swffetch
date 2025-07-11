@@ -653,7 +653,7 @@ class MockedIntegrationTest: XCTestCase {
         XCTAssertGreaterThan(authorStats.count, 0)
 
         // Verify statistics
-        for (author, stats) in authorStats {
+        for (_, stats) in authorStats {
             XCTAssertGreaterThan(stats["postCount"] as? Int ?? 0, 0)
             XCTAssertGreaterThanOrEqual(stats["averageReadTime"] as? Int ?? 0, 0)
             XCTAssertGreaterThanOrEqual(stats["categoryCount"] as? Int ?? 0, 0)
