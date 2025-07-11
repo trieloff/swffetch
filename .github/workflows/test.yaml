@@ -1,21 +1,39 @@
-name: Linting & Tests
+name: Swift Lint & Test
 
-on: 
+on:
+  workflow_dispatch:
   pull_request:
   push:
-    branches: main
+    branches: [main]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build & Test (${{ matrix.os }} / Swift ${{ matrix.swift }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        swift: ["5.9"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18' #required for npm 8 or later.
-    - run: npm ci
-    - run: npm run lint
-      env:
-        CI: true
-    - run: npm run test
+      - uses: actions/checkout@v3
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Install SwiftLint
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install swiftlint
+
+      - name: Lint (SwiftLint)
+        if: matrix.os == 'macos-latest'
+        run: swiftlint
+        continue-on-error: true
+
+      - name: Build
+        run: swift build --build-tests
+
+      - name: Run Tests
+        run: swift test --enable-test-discovery
