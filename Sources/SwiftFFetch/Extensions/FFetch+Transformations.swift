@@ -16,47 +16,43 @@ extension FFetch {
     public func map<T>(_ transform: @escaping FFetchTransform<FFetchEntry, T>) -> FFetchMapped<T> {
         let stream = AsyncStream<T> { continuation in
             Task {
-                do {
-                    var buffer: [T] = []
-                    var activeTasks: [Task<T, Error>] = []
+                var buffer: [T] = []
+                var activeTasks: [Task<T, Error>] = []
 
-                    for await entry in self {
-                        let task = Task<T, Error> {
-                            return try await transform(entry)
-                        }
-                        activeTasks.append(task)
+                for await entry in self {
+                    let task = Task<T, Error> {
+                        return try await transform(entry)
+                    }
+                    activeTasks.append(task)
 
-                        // Limit concurrent tasks
-                        if activeTasks.count >= context.maxConcurrency {
-                            // Wait for all tasks to complete
-                            for task in activeTasks {
-                                do {
-                                    let result = try await task.value
-                                    buffer.append(result)
-                                } catch {
-                                    // Handle transformation errors gracefully
-                                }
+                    // Limit concurrent tasks
+                    if activeTasks.count >= context.maxConcurrency {
+                        // Wait for all tasks to complete
+                        for task in activeTasks {
+                            do {
+                                let result = try await task.value
+                                buffer.append(result)
+                            } catch {
+                                // Handle transformation errors gracefully
                             }
-                            activeTasks.removeAll()
                         }
+                        activeTasks.removeAll()
                     }
+                }
 
-                    // Process remaining tasks
-                    for task in activeTasks {
-                        do {
-                            let result = try await task.value
-                            buffer.append(result)
-                        } catch {
-                            // Handle transformation errors gracefully
-                        }
+                // Process remaining tasks
+                for task in activeTasks {
+                    do {
+                        let result = try await task.value
+                        buffer.append(result)
+                    } catch {
+                        // Handle transformation errors gracefully
                     }
+                }
 
-                    // Yield all results in order
-                    for item in buffer {
-                        continuation.yield(item)
-                    }
-                } catch {
-                    // Handle errors gracefully
+                // Yield all results in order
+                for item in buffer {
+                    continuation.yield(item)
                 }
                 continuation.finish()
             }

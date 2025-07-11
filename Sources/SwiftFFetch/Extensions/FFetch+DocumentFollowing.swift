@@ -20,47 +20,43 @@ extension FFetch {
 
         let stream = AsyncStream<FFetchEntry> { continuation in
             Task {
-                do {
-                    var pendingTasks: [Task<FFetchEntry, Error>] = []
+                var pendingTasks: [Task<FFetchEntry, Error>] = []
 
-                    for await entry in self {
-                        // Create task for document following
-                        let task = Task<FFetchEntry, Error> {
-                            return try await self.followDocument(
-                                entry: entry,
-                                fieldName: fieldName,
-                                newFieldName: targetFieldName
-                            )
-                        }
+                for await entry in self {
+                    // Create task for document following
+                    let task = Task<FFetchEntry, Error> {
+                        return try await self.followDocument(
+                            entry: entry,
+                            fieldName: fieldName,
+                            newFieldName: targetFieldName
+                        )
+                    }
 
-                        pendingTasks.append(task)
+                    pendingTasks.append(task)
 
-                        // Limit concurrent tasks
-                        if pendingTasks.count >= context.maxConcurrency {
-                            // Wait for all tasks to complete and yield results
-                            for task in pendingTasks {
-                                do {
-                                    let result = try await task.value
-                                    continuation.yield(result)
-                                } catch {
-                                    // Handle errors gracefully - continue with other tasks
-                                }
+                    // Limit concurrent tasks
+                    if pendingTasks.count >= context.maxConcurrency {
+                        // Wait for all tasks to complete and yield results
+                        for task in pendingTasks {
+                            do {
+                                let result = try await task.value
+                                continuation.yield(result)
+                            } catch {
+                                // Handle errors gracefully - continue with other tasks
                             }
-                            pendingTasks.removeAll()
                         }
+                        pendingTasks.removeAll()
                     }
+                }
 
-                    // Process remaining tasks
-                    for task in pendingTasks {
-                        do {
-                            let result = try await task.value
-                            continuation.yield(result)
-                        } catch {
-                            // Handle errors gracefully
-                        }
+                // Process remaining tasks
+                for task in pendingTasks {
+                    do {
+                        let result = try await task.value
+                        continuation.yield(result)
+                    } catch {
+                        // Handle errors gracefully
                     }
-                } catch {
-                    // Handle errors gracefully
                 }
                 continuation.finish()
             }
