@@ -106,3 +106,14 @@ To bypass the pre-commit hook (not recommended), use:
 ```bash
 git commit --no-verify
 ```
+
+
+To set up the pre-commit hook automatically, run:
+```bash
+./scripts/setup-pre-commit-hook.sh
+```
+
+This script will:
+- Check if SwiftLint is installed (and install it via Homebrew if needed)
+- Install the pre-commit hook
+- Test the hook to ensure it works correctly
