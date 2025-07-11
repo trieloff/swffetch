@@ -153,7 +153,13 @@ class MockedIntegrationTest: XCTestCase {
                     data: entries
                 )
 
-                let data = try! JSONEncoder().encode(response)
+                let data: Data
+                do {
+                    data = try JSONEncoder().encode(response)
+                } catch {
+                    XCTFail("Failed to encode FFetchResponse: \(error)")
+                    continue
+                }
                 let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
                 client.mockResponse(for: url, data: data)
             }
@@ -176,7 +182,13 @@ class MockedIntegrationTest: XCTestCase {
                 data: entries
             )
 
-            let data = try! JSONEncoder().encode(response)
+            let data: Data
+            do {
+                data = try JSONEncoder().encode(response)
+            } catch {
+                XCTFail("Failed to encode FFetchResponse: \(error)")
+                continue
+            }
             let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
             client.mockResponse(for: url, data: data)
         }
