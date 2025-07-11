@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// SwiftFFetch - A Swift port of the ffetch library for Adobe Experience Manager Edge Delivery Services
 ///

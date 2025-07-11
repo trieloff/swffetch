@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import SwiftSoup
 
 /// Main FFetch class that provides a fluent API for working with AEM Edge Delivery Services

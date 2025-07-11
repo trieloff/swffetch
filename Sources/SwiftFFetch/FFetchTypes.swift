@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import SwiftSoup
 
 /// Represents a single entry from an AEM index response
