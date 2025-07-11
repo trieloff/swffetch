@@ -25,10 +25,18 @@ jobs:
         with:
           swift-version: ${{ matrix.swift }}
 
-      - name: Install SwiftLint
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Install SwiftLint and lcov
         if: matrix.os == 'macos-latest'
         run: |
-          brew install swiftlint
+          brew install swiftlint lcov
 
       - name: Lint (SwiftLint)
         if: matrix.os == 'macos-latest'
@@ -37,8 +45,71 @@ jobs:
       - name: Build
         run: swift build --build-tests -Xswiftc -warnings-as-errors
 
-      - name: Run Tests
-        run: swift test --enable-test-discovery -Xswiftc -warnings-as-errors
+      - name: Run Tests with Coverage
+        run: swift test --enable-test-discovery --enable-code-coverage -Xswiftc -warnings-as-errors
+
+      - name: Generate coverage report
+        if: matrix.os == 'macos-latest'
+        run: |
+          xcrun llvm-cov export .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
+            -instr-profile=.build/arm64-apple-macosx/debug/codecov/default.profdata \
+            -format="lcov" > coverage.lcov
+
+      - name: Filter coverage to source files only
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Filter to only include our source files
+          lcov --extract coverage.lcov "*/Sources/SwiftFFetch/*" -o coverage_filtered.lcov
+
+      - name: Generate coverage summary
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "## 📊 Code Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Source Files Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Line Coverage | Function Coverage |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|---------------|-------------------|" >> $GITHUB_STEP_SUMMARY
+
+          xcrun llvm-cov report .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
+            -instr-profile=.build/arm64-apple-macosx/debug/codecov/default.profdata \
+            | grep "Sources/SwiftFFetch" \
+            | while read -r line; do
+              file=$(echo "$line" | awk '{print $1}' | sed 's/.*Sources\/SwiftFFetch\///')
+              line_cov=$(echo "$line" | awk '{print $8}')
+              func_cov=$(echo "$line" | awk '{print $11}')
+              echo "| $file | $line_cov | $func_cov |" >> $GITHUB_STEP_SUMMARY
+            done
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'macos-latest'
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage_filtered.lcov
+          flags: unittests
+          name: SwiftFFetch Coverage
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Coverage Gate
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Extract overall coverage percentage for source files
+          COVERAGE=$(xcrun llvm-cov report .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
+            -instr-profile=.build/arm64-apple-macosx/debug/codecov/default.profdata \
+            | grep "Sources/SwiftFFetch" | awk '{sum+=$8*$7; total+=$7} END {printf "%.2f", sum/total}')
+
+          echo "Overall source code coverage: $COVERAGE%"
+
+          # Set minimum coverage threshold (80%)
+          THRESHOLD=80.0
+
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
+            exit 1
+          else
+            echo "✅ Coverage $COVERAGE% meets threshold $THRESHOLD%"
+          fi
 
   update-badge:
     name: Update Vibe Coded Badge
