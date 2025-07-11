@@ -133,7 +133,9 @@ public struct FFetch: AsyncSequence {
             }
 
             // Make the request
-            let cachePolicy: URLRequest.CachePolicy = mutableContext.cacheReload ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
+            let cachePolicy: URLRequest.CachePolicy = mutableContext.cacheReload
+                ? .reloadIgnoringLocalCacheData
+                : .useProtocolCachePolicy
 
             do {
                 let (data, response) = try await mutableContext.httpClient.fetch(requestURL, cachePolicy: cachePolicy)
@@ -316,10 +318,8 @@ extension FFetch {
         let stream = AsyncStream<FFetchEntry> { continuation in
             Task {
                 do {
-                    for await entry in self {
-                        if try await predicate(entry) {
-                            continuation.yield(entry)
-                        }
+                    for await entry in self where try await predicate(entry) {
+                        continuation.yield(entry)
                     }
                 } catch {
                     // Handle errors gracefully
@@ -402,7 +402,11 @@ extension FFetch {
                     for await entry in self {
                         // Create task for document following
                         let task = Task<FFetchEntry, Error> {
-                            return try await self.followDocument(entry: entry, fieldName: fieldName, newFieldName: targetFieldName)
+                            return try await self.followDocument(
+                                entry: entry,
+                                fieldName: fieldName,
+                                newFieldName: targetFieldName
+                            )
                         }
 
                         pendingTasks.append(task)
@@ -434,7 +438,11 @@ extension FFetch {
     }
 
     /// Internal method to follow a document reference
-    private func followDocument(entry: FFetchEntry, fieldName: String, newFieldName: String) async throws -> FFetchEntry {
+    private func followDocument(
+        entry: FFetchEntry,
+        fieldName: String,
+        newFieldName: String
+    ) async throws -> FFetchEntry {
         guard let urlString = entry[fieldName] as? String else {
             var result = entry
             result[newFieldName] = nil
@@ -619,10 +627,8 @@ extension FFetchMapped {
         let stream = AsyncStream<T> { continuation in
             Task {
                 do {
-                    for await entry in self {
-                        if try await predicate(entry) {
-                            continuation.yield(entry)
-                        }
+                    for await entry in self where try await predicate(entry) {
+                        continuation.yield(entry)
                     }
                 } catch {
                     // Handle errors gracefully

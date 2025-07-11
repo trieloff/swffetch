@@ -182,7 +182,10 @@ public struct DefaultFFetchHTTPClient: FFetchHTTPClient {
         self.session = session
     }
 
-    public func fetch(_ url: URL, cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy) async throws -> (Data, URLResponse) {
+    public func fetch(
+        _ url: URL,
+        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+    ) async throws -> (Data, URLResponse) {
         var request = URLRequest(url: url)
         request.cachePolicy = cachePolicy
 
