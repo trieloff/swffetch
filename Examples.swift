@@ -173,6 +173,84 @@ public class FFetchExamples {
         }
     }
 
+    // MARK: - Document Following with Security Examples
+
+    /// Example demonstrating secure document following with hostname restrictions
+    struct DocumentFollowingSecurityExample {
+
+        /// Basic document following (same hostname only)
+        static func basicDocumentFollowing() async throws {
+            print("=== Basic Document Following (Same Hostname Only) ===")
+
+            let entriesWithDocs = try await FFetch(url: "https://example.com/query-index.json")
+                .follow("path", as: "document")
+                .all()
+
+            for entry in entriesWithDocs {
+                if let doc = entry["document"] as? Document {
+                    print("✓ Document loaded: \(doc.title())")
+                } else if let error = entry["document_error"] as? String {
+                    print("✗ Document error: \(error)")
+                }
+            }
+        }
+
+        /// Document following with explicitly allowed hostnames
+        static func allowedHostnameDocumentFollowing() async throws {
+            print("=== Document Following with Allowed Hostnames ===")
+
+            let entriesWithDocs = try await FFetch(url: "https://example.com/query-index.json")
+                .allow("trusted.com")
+                .allow("api.example.com")
+                .follow("path", as: "document")
+                .all()
+
+            for entry in entriesWithDocs {
+                if let doc = entry["document"] as? Document {
+                    print("✓ Document from allowed host: \(doc.title())")
+                } else if let error = entry["document_error"] as? String {
+                    print("✗ Document blocked or failed: \(error)")
+                }
+            }
+        }
+
+        /// Document following with wildcard (allow all hostnames)
+        static func wildcardDocumentFollowing() async throws {
+            print("=== Document Following with Wildcard (Use with Caution) ===")
+
+            let entriesWithDocs = try await FFetch(url: "https://example.com/query-index.json")
+                .allow("*")  // Allow all hostnames - use with caution!
+                .follow("path", as: "document")
+                .all()
+
+            for entry in entriesWithDocs {
+                if let doc = entry["document"] as? Document {
+                    print("✓ Document from any host: \(doc.title())")
+                } else if let error = entry["document_error"] as? String {
+                    print("✗ Document failed: \(error)")
+                }
+            }
+        }
+
+        /// Demonstrate security blocking
+        static func securityBlockingExample() async throws {
+            print("=== Security Blocking Example ===")
+
+            // This will block documents from external hostnames
+            let entriesWithDocs = try await FFetch(url: "https://example.com/query-index.json")
+                .follow("external_path", as: "document")  // Contains URLs to other hosts
+                .all()
+
+            for entry in entriesWithDocs {
+                if let doc = entry["document"] as? Document {
+                    print("✓ Document allowed: \(doc.title())")
+                } else if let error = entry["document_error"] as? String {
+                    print("🔒 Security blocked: \(error)")
+                }
+            }
+        }
+    }
+
     // MARK: - Chaining Operations Examples
 
     /// Example 8: Complex operation chaining

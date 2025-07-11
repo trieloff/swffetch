@@ -11,10 +11,43 @@ import Foundation
 
 extension FFetch {
     /// Follow references to fetch HTML documents
+    ///
+    /// This method fetches HTML documents from URLs found in the specified field and parses them
+    /// into SwiftSoup Document objects. For security, document following is restricted to the same
+    /// hostname as the initial request by default.
+    ///
     /// - Parameters:
     ///   - fieldName: Name of the field containing the reference URL
     ///   - newFieldName: Name of the new field to store the document (defaults to fieldName)
     /// - Returns: New FFetch instance with document following
+    ///
+    /// # Security
+    /// By default, only URLs with the same hostname as the initial request are allowed.
+    /// Use `.allow()` to permit additional hostnames:
+    /// ```swift
+    /// .allow("trusted.com")        // Allow specific hostname
+    /// .allow(["api.com", "cdn.com"]) // Allow multiple hostnames
+    /// .allow("*")                  // Allow all hostnames (use with caution)
+    /// ```
+    ///
+    /// # Error Handling
+    /// If a document cannot be fetched (due to network errors, security restrictions, or parsing failures),
+    /// the document field will be `nil` and an error description will be stored in `{fieldName}_error`.
+    ///
+    /// # Example
+    /// ```swift
+    /// let entriesWithDocs = try await FFetch(url: "https://example.com/query-index.json")
+    ///     .follow("path", as: "document")
+    ///     .all()
+    ///
+    /// for entry in entriesWithDocs {
+    ///     if let doc = entry["document"] as? Document {
+    ///         print("Title: \(doc.title())")
+    ///     } else if let error = entry["document_error"] as? String {
+    ///         print("Error: \(error)")
+    ///     }
+    /// }
+    /// ```
     public func follow(_ fieldName: String, as newFieldName: String? = nil) -> FFetch {
         let targetFieldName = newFieldName ?? fieldName
 
@@ -79,8 +112,7 @@ extension FFetch {
             )
         }
 
-        let documentURL = resolveDocumentURL(urlString: urlString)
-        guard let resolvedURL = documentURL else {
+        guard let resolvedURL = resolveDocumentURL(urlString: urlString) else {
             return createErrorEntry(
                 entry: entry,
                 newFieldName: newFieldName,
@@ -88,6 +120,41 @@ extension FFetch {
             )
         }
 
+        guard isHostnameAllowed(resolvedURL) else {
+            return createSecurityErrorEntry(
+                entry: entry,
+                newFieldName: newFieldName,
+                hostname: resolvedURL.host ?? "unknown"
+            )
+        }
+
+        return await fetchDocumentData(
+            entry: entry,
+            newFieldName: newFieldName,
+            resolvedURL: resolvedURL
+        )
+    }
+
+    /// Create security error entry for blocked hostname
+    private func createSecurityErrorEntry(
+        entry: FFetchEntry,
+        newFieldName: String,
+        hostname: String
+    ) -> FFetchEntry {
+        return createErrorEntry(
+            entry: entry,
+            newFieldName: newFieldName,
+            error: "Hostname '\(hostname)' is not allowed for document following. " +
+                  "Use .allow() to permit additional hostnames."
+        )
+    }
+
+    /// Fetch document data from resolved URL
+    private func fetchDocumentData(
+        entry: FFetchEntry,
+        newFieldName: String,
+        resolvedURL: URL
+    ) async -> FFetchEntry {
         do {
             let (data, response) = try await context.httpClient.fetch(
                 resolvedURL,
@@ -155,6 +222,21 @@ extension FFetch {
                 error: "HTML parsing error for \(resolvedURL): \(error)"
             )
         }
+    }
+
+    /// Check if hostname is allowed for document following
+    private func isHostnameAllowed(_ url: URL) -> Bool {
+        guard let targetHost = url.host else {
+            return false
+        }
+
+        // If "*" is in allowed hosts, allow all hostnames
+        if context.allowedHosts.contains("*") {
+            return true
+        }
+
+        // Check if the target hostname is in the allowed list
+        return context.allowedHosts.contains(targetHost)
     }
 
     /// Create an entry with error information

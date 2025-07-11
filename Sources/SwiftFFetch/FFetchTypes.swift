@@ -233,6 +233,11 @@ public struct FFetchContext {
     /// Maximum number of concurrent operations
     public var maxConcurrency: Int
 
+    /// Set of allowed hostnames for document following (security feature)
+    /// By default, only the hostname of the initial request is allowed
+    /// Use "*" to allow all hostnames
+    public var allowedHosts: Set<String>
+
     public init(
         chunkSize: Int = 255,
         cacheReload: Bool = false,
@@ -240,7 +245,8 @@ public struct FFetchContext {
         httpClient: FFetchHTTPClient = DefaultFFetchHTTPClient(),
         htmlParser: FFetchHTMLParser = DefaultFFetchHTMLParser(),
         total: Int? = nil,
-        maxConcurrency: Int = 5
+        maxConcurrency: Int = 5,
+        allowedHosts: Set<String> = []
     ) {
         self.chunkSize = chunkSize
         self.cacheReload = cacheReload
@@ -249,6 +255,7 @@ public struct FFetchContext {
         self.htmlParser = htmlParser
         self.total = total
         self.maxConcurrency = maxConcurrency
+        self.allowedHosts = allowedHosts
     }
 }
 
