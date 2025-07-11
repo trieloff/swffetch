@@ -10,12 +10,11 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build & Test (${{ matrix.os }} / Swift ${{ matrix.swift }})
-    runs-on: ${{ matrix.os }}
+  test-macos:
+    name: Test macOS (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [macos-latest]
         swift: ["5.9"]
     steps:
       - uses: actions/checkout@v3
@@ -34,12 +33,10 @@ jobs:
             ${{ runner.os }}-spm-
 
       - name: Install SwiftLint and lcov
-        if: matrix.os == 'macos-latest'
         run: |
           brew install swiftlint lcov
 
       - name: Lint (SwiftLint)
-        if: matrix.os == 'macos-latest'
         run: swiftlint
 
       - name: Build
@@ -49,20 +46,17 @@ jobs:
         run: swift test --enable-test-discovery --enable-code-coverage -Xswiftc -warnings-as-errors
 
       - name: Generate coverage report
-        if: matrix.os == 'macos-latest'
         run: |
           xcrun llvm-cov export .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
             -instr-profile=.build/arm64-apple-macosx/debug/codecov/default.profdata \
             -format="lcov" > coverage.lcov
 
       - name: Filter coverage to source files only
-        if: matrix.os == 'macos-latest'
         run: |
           # Filter to only include our source files
           lcov --extract coverage.lcov "*/Sources/SwiftFFetch/*" -o coverage_filtered.lcov
 
       - name: Generate coverage summary
-        if: matrix.os == 'macos-latest'
         run: |
           echo "## 📊 Code Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -83,16 +77,16 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'macos-latest'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: coverage_filtered.lcov
           flags: unittests
           name: SwiftFFetch Coverage
           fail_ci_if_error: false
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Coverage Gate
-        if: matrix.os == 'macos-latest'
         run: |
           # Extract overall coverage percentage for source files
           COVERAGE=$(xcrun llvm-cov report .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
@@ -111,11 +105,101 @@ jobs:
             echo "✅ Coverage $COVERAGE% meets threshold $THRESHOLD%"
           fi
 
+  test-ios:
+    name: Test iOS Simulator (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ["5.9"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-ios-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-ios-spm-
+
+      - name: Build for iOS Simulator
+        run: |
+          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphonesimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-ios15.0-simulator
+
+      - name: Run Tests on iOS Simulator
+        run: |
+          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphonesimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-ios15.0-simulator
+
+  test-tvos:
+    name: Test tvOS Simulator (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ["5.9"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-tvos-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-tvos-spm-
+
+      - name: Build for tvOS Simulator
+        run: |
+          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk appletvsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-tvos15.0-simulator
+
+      - name: Run Tests on tvOS Simulator
+        run: |
+          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk appletvsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-tvos15.0-simulator
+
+  test-watchos:
+    name: Test watchOS Simulator (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ["5.9"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-watchos-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-watchos-spm-
+
+      - name: Build for watchOS Simulator
+        run: |
+          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk watchsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-watchos8.0-simulator
+
+      - name: Run Tests on watchOS Simulator
+        run: |
+          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk watchsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-watchos8.0-simulator
+
   update-badge:
     name: Update Vibe Coded Badge
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip vibe-badge]')"
-    needs: build
+    needs: [test-macos, test-ios, test-tvos, test-watchos]
     steps:
       - uses: actions/checkout@v4
         with:
