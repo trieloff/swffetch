@@ -1,102 +1,98 @@
-# `ffetch` – `fetch` for Edge Delivery Services (Franklin)
+swffetch/README.md
+# SwiftFFetch
 
-`ffetch` is a small wrapper around the JavaScript `fetch` function that helps you deal with the AEM (.live) Content API when
-building a composable application. It makes it easy to `fetch` content from 
-[an Index](https://www.aem.live/developer/indexing), apply lazy pagination, follow links to pages, and even pull
-[page metadata](https://www.aem.live/developer/block-collection/metadata). With `ffetch` you get all the ease of creating
-a headless application without the peformance baggage of headless SDKs and the complexity of headless APIs.
+SwiftFFetch is a Swift library for fetching and processing content from AEM (.live) Content APIs and similar JSON-based endpoints. It is designed for composable applications, making it easy to retrieve, paginate, and process content in a Swift-native way.
 
-## Why `ffetch`?
+## Features
 
-- minimal: less than [200 lines of code](https://github.com/Buuhuu/ffetch/blob/main/src/ffetch.js)
-- dependency free, just copy it into your project
-- high performance: uses your browser cache
-- works in browsers and node.js
-- fun to use
+- **Swift-native API**: Designed for idiomatic use in Swift projects.
+- **Async/Await Support**: Uses Swift concurrency for efficient, modern code.
+- **Pagination**: Handles paginated endpoints seamlessly.
+- **Composable**: Chainable methods for mapping, filtering, and transforming content.
+- **Sheet Selection**: Access specific sheets in multi-sheet JSON resources.
+- **Extensible**: Easily integrate with your own models and workflows.
+
+## Installation
+
+Add SwiftFFetch to your `Package.swift` dependencies:
+
+```swift
+.package(url: "https://github.com/your-org/swffetch.git", from: "1.0.0")
+```
+
+Then add `"SwiftFFetch"` to your target dependencies.
 
 ## Usage
 
-Check the [tests for detailed examples](https://github.com/Buuhuu/ffetch/blob/main/test/ffetch.js):
+### Fetch Entries from an Index
 
-### Get Entries from an Index
+```swift
+import SwiftFFetch
 
-```javascript
-const entries = ffetch('/query-index.json');
-let i = 0;
-for await (const entry of entries) {
-  console.log(entry.title);
+let entries = FFetch(url: "/query-index.json")
+for try await entry in entries {
+    print(entry["title"] as? String ?? "")
 }
 ```
 
-`ffetch` will return a generator, so you can just iterate over the return value. If pagination is necessary, `ffetch` will
-fetch additional pages from the server as you exhaust the available records.
+### Get the First Entry
 
-### Get the first entry
-
-```javascript
-console.log(await ffetch('/query-index.json').first());
+```swift
+let firstEntry = try await FFetch(url: "/query-index.json").first()
+print(firstEntry?["title"] as? String ?? "")
 ```
 
-### Get all entries as an array (so you can `.map` and `.filter`)
+### Get All Entries as an Array
 
-Using `.all()` you can change the return value from a generator to a plain array.
-
-```javascript
-const allentries = await ffetch('/query-index.json').all();
-allentries.forEach((e) => {
-  console.log(e);
-});
-```
-
-But if you prefer to use `.map` and `.filter`, you can do this right on the generator:
-
-```javascript
-const someentries = ffetch('/query-index.json')
-  .map(({title}) => title)
-  .filter(title => title.indexOf('Helix'));
-for await (title of someentries) {
-  console.log(title);
+```swift
+let allEntries = try await FFetch(url: "/query-index.json").all()
+allEntries.forEach { entry in
+    print(entry)
 }
 ```
 
-### Tune performance with `.chunks` and `.limit`
+### Map and Filter Entries
 
-If you want to control the size of the chunks that are loaded using pagination, use `ffetch(...).chunks(100)`.
+```swift
+let filteredTitles = FFetch(url: "/query-index.json")
+    .map { $0["title"] as? String }
+    .filter { $0?.contains("Swift") == true }
 
-To limit the result set based on the number of entries you need to show on the page, use `ffetch(...).limit(5)`. The `limit()`
-applies after all `.filter()`s, so it is an effective way to only process what needs to be shown.
-
-If you need to skip a couple of entries, then `.slice(start, end)` is your friend. It works exactly like 
-[`Array.prototype.slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-
-### Work with multi-sheets
-
-AEM JSON resources can contain multiple sheets. With `.sheet(name)` you can specify, which sheet you want to access.
-
-```javascript
-const entries = ffetch('/query-index.json')
-  .sheet('products');
-let i = 0;
-for await (const entry of entries) {
-  console.log(entry.sku);
+for try await title in filteredTitles {
+    print(title ?? "")
 }
 ```
 
-### Work with HTML pages
+### Control Pagination with `chunks` and `limit`
 
-In AEM, the Hypertext is the API, so you can get a [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document) for
-each HTML document referenced from an index sheet.
+```swift
+let limitedEntries = FFetch(url: "/query-index.json")
+    .chunks(100)
+    .limit(5)
 
-```javascript
-const docs = ffetch('/query-index.json')
-   // assumes that the path property holds the reference to our document
-   // stores the returned document in a new field (optional)
-  .follow('path', 'document')
-  .map(({document}) => document.querySelector('img')) // get the first image
-  .filter(i => !!i) // drop entries that don't have an image
-  .limit(10); // that's enough
-  
-for await (const img of docs) {
-  document.append(img); // take the image from the linked document and place it here
+for try await entry in limitedEntries {
+    print(entry)
 }
 ```
+
+### Access a Specific Sheet
+
+```swift
+let productEntries = FFetch(url: "/query-index.json")
+    .sheet("products")
+
+for try await entry in productEntries {
+    print(entry["sku"] as? String ?? "")
+}
+```
+
+## Example
+
+See `Examples.swift` in the repository for more detailed usage.
+
+## License
+
+This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for details.
+
+---
+SwiftFFetch is not affiliated with Adobe or AEM. It is an independent open-source project.
