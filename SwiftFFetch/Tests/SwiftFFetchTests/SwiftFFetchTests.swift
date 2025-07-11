@@ -32,12 +32,27 @@ final class SwiftFFetchTests: XCTestCase {
         var errors: [URL: Error] = [:]
 
         func fetch(_ url: URL, cachePolicy: URLRequest.CachePolicy) async throws -> (Data, URLResponse) {
+            // Try exact match first
             if let error = errors[url] {
                 throw error
             }
-
             if let response = responses[url] {
                 return response
+            }
+
+            // Try to match relative URLs against the entry point base URL
+            // (Assume the entry point is always absolute and all other paths are relative)
+            if !url.isFileURL, url.scheme != nil, let base = responses.keys.first(where: { $0.scheme != nil && $0.host == url.host }) {
+                // Compose a relative path from the base
+                let relative = URL(string: url.path, relativeTo: base)?.absoluteURL
+                if let relative = relative {
+                    if let error = errors[relative] {
+                        throw error
+                    }
+                    if let response = responses[relative] {
+                        return response
+                    }
+                }
             }
 
             // Default 404 response
@@ -445,8 +460,13 @@ final class SwiftFFetchTests: XCTestCase {
         for (index, entry) in entriesWithDocs.enumerated() {
             XCTAssertEqual(entry["title"] as? String, "Entry \(index)")
             XCTAssertEqual(entry["path"] as? String, "/document-\(index)")
-            XCTAssertNotNil(entry["document"])
-            XCTAssertTrue(entry["document"] is Document)
+            // New error-aware logic:
+            if let error = entry["document_error"] as? String {
+                XCTFail("Unexpected error for document: \(error)")
+            } else {
+                XCTAssertNotNil(entry["document"])
+                XCTAssertTrue(entry["document"] is Document)
+            }
         }
     }
 
@@ -474,6 +494,12 @@ final class SwiftFFetchTests: XCTestCase {
         XCTAssertEqual(entry["title"] as? String, "Entry 0")
         XCTAssertEqual(entry["path"] as? String, "/missing-document")
         XCTAssertNil(entry["document"])
+        // Should have an error field describing the failure
+        XCTAssertNotNil(entry["document_error"])
+        XCTAssertTrue((entry["document_error"] as? String)?.contains("HTTP error") ?? false ||
+                      (entry["document_error"] as? String)?.contains("Network error") ?? false ||
+                      (entry["document_error"] as? String)?.contains("No HTTPURLResponse") ?? false ||
+                      (entry["document_error"] as? String)?.contains("HTML parsing error") ?? false)
     }
 
     // MARK: - Cache Tests

@@ -24,7 +24,7 @@ import SwiftSoup
 @testable import SwiftFFetch
 
 /// Integration tests that simulate real-world usage patterns
-class MockedIntegrationTest: XCTestCase
+class MockedIntegrationTest: XCTestCase {
 
     // MARK: - Mock HTTP Client with Advanced Behavior
 
@@ -47,15 +47,33 @@ class MockedIntegrationTest: XCTestCase
             }
 
             let key = url.absoluteString
+            print("[AdvancedMockHTTPClient] fetch called with URL: \(key)")
 
             if let error = errors[key] {
+                print("[AdvancedMockHTTPClient] Found error for key: \(key)")
                 throw error
             }
 
             if let response = responses[key] {
+                print("[AdvancedMockHTTPClient] Found response for key: \(key)")
                 return response
             }
 
+            // Try to match relative URLs against the entry point base URL
+            if let base = responses.keys.first(where: { $0.hasPrefix("https://") }) {
+                if let relativeURL = URL(string: url.path, relativeTo: URL(string: base))?.absoluteString {
+                    if let error = errors[relativeURL] {
+                        print("[AdvancedMockHTTPClient] Found error for relative URL: \(relativeURL)")
+                        throw error
+                    }
+                    if let response = responses[relativeURL] {
+                        print("[AdvancedMockHTTPClient] Found response for relative URL: \(relativeURL)")
+                        return response
+                    }
+                }
+            }
+
+            print("[AdvancedMockHTTPClient] No response found for URL: \(key), returning 404")
             // Default 404 response
             let httpResponse = HTTPURLResponse(
                 url: url,
@@ -125,23 +143,24 @@ class MockedIntegrationTest: XCTestCase
 
     func mockBlogIndex(client: AdvancedMockHTTPClient, total: Int = 50) {
         let baseURL = "https://example.com/blog-index.json"
-        let chunkSize = 10
+        let chunkSizes = [10, 20]
+        for chunkSize in chunkSizes {
+            for offset in stride(from: 0, to: total, by: chunkSize) {
+                let entries = Array(offset..<min(offset + chunkSize, total)).map { index in
+                    createBlogPostEntry(id: index, published: index % 4 != 0) // 75% published
+                }
 
-        for offset in stride(from: 0, to: total, by: chunkSize) {
-            let entries = Array(offset..<min(offset + chunkSize, total)).map { index in
-                createBlogPostEntry(id: index, published: index % 4 != 0) // 75% published
+                let response = FFetchResponse(
+                    total: total,
+                    offset: offset,
+                    limit: chunkSize,
+                    data: entries
+                )
+
+                let data = try! JSONEncoder().encode(response)
+                let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
+                client.mockResponse(for: url, data: data)
             }
-
-            let response = FFetchResponse(
-                total: total,
-                offset: offset,
-                limit: chunkSize,
-                data: entries
-            )
-
-            let data = try! JSONEncoder().encode(response)
-            let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
-            client.mockResponse(for: url, data: data)
         }
     }
 
@@ -575,9 +594,21 @@ class MockedIntegrationTest: XCTestCase
             .withHTTPClient(client)
             .chunks(20)
             .filter { post in
-                return (post["published"] as? Bool) == true
+                // Accept true for Bool, NSNumber, or any value that is "truthy"
+                if let b = post["published"] as? Bool {
+                    return b
+                }
+                if let n = post["published"] as? NSNumber {
+                    return n.boolValue
+                }
+                if let s = post["published"] as? String {
+                    return s == "true" || s == "1"
+                }
+                return false
             }
             .all()
+
+
 
         // Group by author
         var authorStats: [String: [String: Any]] = [:]
@@ -617,6 +648,12 @@ class MockedIntegrationTest: XCTestCase
             authorStats[author]?["categoryCount"] = (stats["categories"] as? Set<String>)?.count ?? 0
         }
 
+        // If allPosts is empty, fail early with diagnostic
+        if allPosts.isEmpty {
+            XCTFail("No posts were returned from FFetch. Check mockBlogIndex or filter logic.")
+            return
+        }
+
         XCTAssertGreaterThan(authorStats.count, 0)
 
         // Verify statistics
@@ -624,8 +661,6 @@ class MockedIntegrationTest: XCTestCase
             XCTAssertGreaterThan(stats["postCount"] as? Int ?? 0, 0)
             XCTAssertGreaterThanOrEqual(stats["averageReadTime"] as? Int ?? 0, 0)
             XCTAssertGreaterThanOrEqual(stats["categoryCount"] as? Int ?? 0, 0)
-
-            print("Author: \(author), Posts: \(stats["postCount"] ?? 0), Avg Read Time: \(stats["averageReadTime"] ?? 0)min")
         }
     }
 }

@@ -436,31 +436,62 @@ extension FFetch {
 
     /// Internal method to follow a document reference
     private func followDocument(entry: FFetchEntry, fieldName: String, newFieldName: String) async throws -> FFetchEntry {
-        guard let urlString = entry[fieldName] as? String,
-              let documentURL = URL(string: urlString) else {
-            return entry
+        guard let urlString = entry[fieldName] as? String else {
+            var result = entry
+            result[newFieldName] = nil
+            result["\(newFieldName)_error"] = "Missing or invalid URL string in field '\(fieldName)'"
+            return result
+        }
+
+        // Resolve relative URLs against the base URL
+        let documentURL: URL?
+        if let absURL = URL(string: urlString), absURL.scheme != nil {
+            documentURL = absURL
+        } else {
+            documentURL = URL(string: urlString, relativeTo: self.url)?.absoluteURL
+        }
+
+        guard let resolvedURL = documentURL else {
+            var result = entry
+            result[newFieldName] = nil
+            result["\(newFieldName)_error"] = "Could not resolve URL from field '\(fieldName)': \(urlString)"
+            return result
         }
 
         do {
-            let (data, response) = try await context.httpClient.fetch(documentURL, cachePolicy: .useProtocolCachePolicy)
+            let (data, response) = try await context.httpClient.fetch(resolvedURL, cachePolicy: .useProtocolCachePolicy)
 
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode != 200 {
+                    var result = entry
+                    result[newFieldName] = nil
+                    result["\(newFieldName)_error"] = "HTTP error \(httpResponse.statusCode) for \(resolvedURL)"
+                    return result
+                }
+            } else {
                 var result = entry
                 result[newFieldName] = nil
+                result["\(newFieldName)_error"] = "No HTTPURLResponse for \(resolvedURL)"
                 return result
             }
 
             let html = String(data: data, encoding: .utf8) ?? ""
-            let document = try context.htmlParser.parse(html)
-
-            var result = entry
-            result[newFieldName] = document
-            return result
+            do {
+                let document = try context.htmlParser.parse(html)
+                var result = entry
+                result[newFieldName] = document
+                return result
+            } catch {
+                var result = entry
+                result[newFieldName] = nil
+                result["\(newFieldName)_error"] = "HTML parsing error for \(resolvedURL): \(error)"
+                return result
+            }
 
         } catch {
             var result = entry
             result[newFieldName] = nil
+            result["\(newFieldName)_error"] = "Network error for \(resolvedURL): \(error)"
             return result
         }
     }

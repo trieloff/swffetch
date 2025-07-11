@@ -112,6 +112,37 @@ let postsWithContent = try await ffetch("/blog-index.json")
     .all()
 ```
 
+### Error Handling for `.follow()`
+
+When using `.follow(fieldName, as: newFieldName)`, SwiftFFetch will attempt to fetch and parse the referenced document for each entry. If an error occurs (such as a network error, HTTP error, or HTML parsing error), the following will happen:
+
+- The `newFieldName` field will be set to `nil`.
+- An additional field named `newFieldName_error` will be added to the entry, containing a description of the error.
+
+This allows you to distinguish between a missing document and a fetch/parse failure. For example:
+
+```swift
+let postsWithContent = try await ffetch("/blog-index.json")
+    .follow("path", as: "document")
+    .map { entry -> [String: Any] in
+        if let error = entry["document_error"] as? String {
+            print("Error fetching document: \(error)")
+        }
+        // ... your logic ...
+        return entry
+    }
+    .all()
+```
+
+Possible error messages include:
+- "Missing or invalid URL string in field ..."
+- "Could not resolve URL from field ..."
+- "HTTP error 404 for ..."
+- "No HTTPURLResponse for ..."
+- "HTML parsing error for ..."
+- "Network error for ..."
+
+
 ### Performance Tuning
 
 ```swift
