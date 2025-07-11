@@ -96,3 +96,13 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 
 ---
 SwiftFFetch is not affiliated with Adobe or AEM. It is an independent open-source project.
+
+## Development Setup
+
+### Pre-commit Hook
+This project uses SwiftLint as a pre-commit hook to ensure code quality. The hook automatically runs before each commit and will prevent commits if there are any linting violations.
+
+To bypass the pre-commit hook (not recommended), use:
+```bash
+git commit --no-verify
+```
