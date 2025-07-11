@@ -38,7 +38,7 @@ final class MockedIntegrationECommerceTests: XCTestCase {
 
     func testPerformanceOptimizedStreaming() async throws {
         let client = AdvancedMockHTTPClient()
-        mockProductIndex(client: client, total: 1000)
+        mockProductIndex(client: client, total: 1000, chunkSize: 100)
 
         let ffetch = FFetch(url: URL(string: "https://example.com/products-index.json")!)
             .withHTTPClient(client)

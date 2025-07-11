@@ -173,38 +173,35 @@ func createProductEntry(id: Int, inStock: Bool = true, price: Double = 99.99) ->
     ]
 }
 
-func mockBlogIndex(client: AdvancedMockHTTPClient, total: Int = 50) {
+func mockBlogIndex(client: AdvancedMockHTTPClient, total: Int = 50, chunkSize: Int = 255) {
     let baseURL = "https://example.com/blog-index.json"
-    let chunkSizes = [10, 20]
-    for chunkSize in chunkSizes {
-        for offset in stride(from: 0, to: total, by: chunkSize) {
-            let entries = Array(offset..<min(offset + chunkSize, total)).map { index in
-                createBlogPostEntry(id: index, published: index % 4 != 0) // 75% published
-            }
 
-            let response = FFetchResponse(
-                total: total,
-                offset: offset,
-                limit: chunkSize,
-                data: entries
-            )
-
-            let data: Data
-            do {
-                data = try JSONEncoder().encode(response)
-            } catch {
-                XCTFail("Failed to encode FFetchResponse: \(error)")
-                continue
-            }
-            let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
-            client.mockResponse(for: url, data: data)
+    for offset in stride(from: 0, to: total, by: chunkSize) {
+        let entries = Array(offset..<min(offset + chunkSize, total)).map { index in
+            createBlogPostEntry(id: index, published: index % 4 != 0) // 75% published
         }
+
+        let response = FFetchResponse(
+            total: total,
+            offset: offset,
+            limit: chunkSize,
+            data: entries
+        )
+
+        let data: Data
+        do {
+            data = try JSONEncoder().encode(response)
+        } catch {
+            XCTFail("Failed to encode FFetchResponse: \(error)")
+            continue
+        }
+        let url = "\(baseURL)?offset=\(offset)&limit=\(chunkSize)"
+        client.mockResponse(for: url, data: data)
     }
 }
 
-func mockProductIndex(client: AdvancedMockHTTPClient, total: Int = 100) {
+func mockProductIndex(client: AdvancedMockHTTPClient, total: Int = 100, chunkSize: Int = 255) {
     let baseURL = "https://example.com/products-index.json"
-    let chunkSize = 25
 
     for offset in stride(from: 0, to: total, by: chunkSize) {
         let entries = Array(offset..<min(offset + chunkSize, total)).map { index in

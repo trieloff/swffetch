@@ -35,13 +35,13 @@ final class MockedIntegrationMultiSheetTests: XCTestCase {
         let productsResponse = FFetchResponse(
             total: 5,
             offset: 0,
-            limit: 5,
+            limit: 255,
             data: productsEntries
         )
         let blogResponse = FFetchResponse(
             total: 3,
             offset: 0,
-            limit: 3,
+            limit: 255,
             data: blogEntries
         )
 
@@ -49,8 +49,8 @@ final class MockedIntegrationMultiSheetTests: XCTestCase {
         let productsData = try encoder.encode(productsResponse)
         let blogData = try encoder.encode(blogResponse)
 
-        client.mockResponse(for: "\(baseURL)?sheet=products&offset=0&limit=5", data: productsData)
-        client.mockResponse(for: "\(baseURL)?sheet=blog&offset=0&limit=3", data: blogData)
+        client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=products", data: productsData)
+        client.mockResponse(for: "\(baseURL)?offset=0&limit=255&sheet=blog", data: blogData)
 
         // Test fetching products sheet
         let products = try await FFetch(url: URL(string: baseURL)!)
