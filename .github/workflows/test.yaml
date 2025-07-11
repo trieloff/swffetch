@@ -127,13 +127,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ios-spm-
 
-      - name: Build for iOS Simulator
+      - name: Build and Test for iOS Simulator
         run: |
-          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphonesimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-ios15.0-simulator
-
-      - name: Run Tests on iOS Simulator
-        run: |
-          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphonesimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-ios15.0-simulator
+          xcodebuild test -scheme SwiftFFetch -destination "platform=iOS Simulator,name=iPhone 15" -enableCodeCoverage NO
 
   test-tvos:
     name: Test tvOS Simulator (Swift ${{ matrix.swift }})
@@ -157,13 +153,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-tvos-spm-
 
-      - name: Build for tvOS Simulator
+      - name: Build and Test for tvOS Simulator
         run: |
-          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk appletvsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-tvos15.0-simulator
-
-      - name: Run Tests on tvOS Simulator
-        run: |
-          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk appletvsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-tvos15.0-simulator
+          xcodebuild test -scheme SwiftFFetch -destination "platform=tvOS Simulator,name=Apple TV" -enableCodeCoverage NO
 
   test-watchos:
     name: Test watchOS Simulator (Swift ${{ matrix.swift }})
@@ -187,13 +179,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-watchos-spm-
 
-      - name: Build for watchOS Simulator
+      - name: Build and Test for watchOS Simulator
         run: |
-          swift build --build-tests -Xswiftc -sdk -Xswiftc $(xcrun --sdk watchsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-watchos8.0-simulator
-
-      - name: Run Tests on watchOS Simulator
-        run: |
-          swift test -Xswiftc -sdk -Xswiftc $(xcrun --sdk watchsimulator --show-sdk-path) -Xswiftc -target -Xswiftc x86_64-apple-watchos8.0-simulator
+          xcodebuild test -scheme SwiftFFetch -destination "platform=watchOS Simulator,name=Apple Watch Series 9 (45mm)" -enableCodeCoverage NO
 
   update-badge:
     name: Update Vibe Coded Badge
