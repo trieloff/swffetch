@@ -13,7 +13,7 @@ public struct FFetch: AsyncSequence {
 
     internal let url: URL
     internal let context: FFetchContext
-    private let upstream: AsyncStream<FFetchEntry>?
+    internal let upstream: AsyncStream<FFetchEntry>?
 
     /// Initialize with URL and default context
     /// - Parameter url: Base URL for fetching data
@@ -161,66 +161,6 @@ extension FFetch {
     public func withHTMLParser(_ parser: FFetchHTMLParser) -> FFetch {
         var newContext = context
         newContext.htmlParser = parser
-        return FFetch(url: url, context: newContext, upstream: upstream)
-    }
-
-    /// Allow document following to specific hostname(s)
-    ///
-    /// By default, document following is restricted to the same hostname as the initial request
-    /// for security reasons. Use this method to explicitly allow additional hostnames.
-    ///
-    /// - Parameter hostname: Hostname to allow (e.g., "api.example.com"), or "*" to allow all hostnames
-    /// - Returns: New FFetch instance with updated allowed hosts
-    ///
-    /// # Security Note
-    /// Use caution when allowing additional hostnames, especially "*". This can expose your
-    /// application to security risks if untrusted URLs are processed.
-    ///
-    /// # Example
-    /// ```swift
-    /// let entries = try await FFetch(url: "https://example.com/query-index.json")
-    ///     .allow("trusted.com")
-    ///     .follow("path", as: "document")
-    ///     .all()
-    /// ```
-    public func allow(_ hostname: String) -> FFetch {
-        var newContext = context
-        if hostname == "*" {
-            newContext.allowedHosts = ["*"]
-        } else {
-            newContext.allowedHosts.insert(hostname)
-        }
-        return FFetch(url: url, context: newContext, upstream: upstream)
-    }
-
-    /// Allow document following to multiple hostnames
-    ///
-    /// Convenience method to allow multiple hostnames at once. If any hostname is "*",
-    /// all hostnames will be allowed.
-    ///
-    /// - Parameter hostnames: Array of hostnames to allow (e.g., ["api.example.com", "cdn.example.com"])
-    /// - Returns: New FFetch instance with updated allowed hosts
-    ///
-    /// # Security Note
-    /// Each hostname should be trusted. If the array contains "*", all hostnames will be allowed.
-    ///
-    /// # Example
-    /// ```swift
-    /// let entries = try await FFetch(url: "https://example.com/query-index.json")
-    ///     .allow(["trusted.com", "api.example.com"])
-    ///     .follow("path", as: "document")
-    ///     .all()
-    /// ```
-    public func allow(_ hostnames: [String]) -> FFetch {
-        var newContext = context
-        for hostname in hostnames {
-            if hostname == "*" {
-                newContext.allowedHosts = ["*"]
-                break
-            } else {
-                newContext.allowedHosts.insert(hostname)
-            }
-        }
         return FFetch(url: url, context: newContext, upstream: upstream)
     }
 }

@@ -224,21 +224,6 @@ extension FFetch {
         }
     }
 
-    /// Check if hostname is allowed for document following
-    private func isHostnameAllowed(_ url: URL) -> Bool {
-        guard let targetHost = url.host else {
-            return false
-        }
-
-        // If "*" is in allowed hosts, allow all hostnames
-        if context.allowedHosts.contains("*") {
-            return true
-        }
-
-        // Check if the target hostname is in the allowed list
-        return context.allowedHosts.contains(targetHost)
-    }
-
     /// Create an entry with error information
     private func createErrorEntry(
         entry: FFetchEntry,
@@ -249,5 +234,43 @@ extension FFetch {
         result[newFieldName] = nil
         result["\(newFieldName)_error"] = error
         return result
+    }
+
+    /// Check if hostname is allowed for document following
+    private func isHostnameAllowed(_ url: URL) -> Bool {
+        // Allow wildcard
+        if context.allowedHosts.contains("*") {
+            return true
+        }
+
+        // Allow if hostname matches any in the allowlist
+        if let hostname = url.host {
+            return context.allowedHosts.contains(hostname)
+        }
+
+        // Block URLs without hostname (like file://)
+        return false
+    }
+}
+
+// MARK: - Hostname Security Configuration
+
+extension FFetch {
+    /// Allow document following from specific hostname
+    /// - Parameter hostname: Hostname to allow (use "*" for all hostnames)
+    /// - Returns: New FFetch instance with updated hostname allowlist
+    public func allow(_ hostname: String) -> FFetch {
+        var newContext = context
+        newContext.allowedHosts.insert(hostname)
+        return FFetch(url: url, context: newContext, upstream: upstream)
+    }
+
+    /// Allow document following from multiple hostnames
+    /// - Parameter hostnames: Array of hostnames to allow
+    /// - Returns: New FFetch instance with updated hostname allowlist
+    public func allow(_ hostnames: [String]) -> FFetch {
+        var newContext = context
+        newContext.allowedHosts.formUnion(hostnames)
+        return FFetch(url: url, context: newContext, upstream: upstream)
     }
 }
