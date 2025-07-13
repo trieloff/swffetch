@@ -260,6 +260,35 @@ This project is licensed under the terms of the Apache License 2.0. See [LICENSE
 
 ## Development Setup
 
+### Quick Commands
+Use the provided Makefile for common development tasks:
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage
+make coverage
+
+# Generate detailed coverage report
+make coverage-report
+
+# Run swiftlint
+make lint
+
+# Build the project
+make build
+
+# Clean build artifacts
+make clean
+
+# Install dependencies
+make install
+
+# Format code (requires swiftformat)
+make format
+```
+
 ### Pre-commit Hook
 This project uses SwiftLint as a pre-commit hook to ensure code quality. The hook automatically runs before each commit and will prevent commits if there are any linting violations.
 
@@ -267,7 +296,6 @@ To bypass the pre-commit hook (not recommended), use:
 ```bash
 git commit --no-verify
 ```
-
 
 To set up the pre-commit hook automatically, run:
 ```bash
