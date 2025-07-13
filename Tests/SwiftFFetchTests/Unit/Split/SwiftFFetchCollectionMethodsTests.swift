@@ -62,4 +62,68 @@ final class SwiftFFetchCollectionMethodsTests: XCTestCase {
 
         XCTAssertEqual(count, 15)
     }
+
+    // MARK: - FFetchMapped Collection Operations Tests
+
+    func testMappedAllMethod() async throws {
+        let baseURL = URL(string: "https://example.com/query-index.json")!
+        let client = MockHTTPClient()
+        mockIndexRequests(client: client, baseURL: baseURL, total: 3)
+
+        let allTitles = try await FFetch(url: baseURL)
+            .withHTTPClient(client)
+            .map { entry in
+                entry["title"] as? String ?? ""
+            }
+            .all()
+
+        XCTAssertEqual(allTitles.count, 3)
+        XCTAssertEqual(allTitles, ["Entry 0", "Entry 1", "Entry 2"])
+    }
+
+    func testMappedFirstMethod() async throws {
+        let baseURL = URL(string: "https://example.com/query-index.json")!
+        let client = MockHTTPClient()
+        mockIndexRequests(client: client, baseURL: baseURL, total: 5)
+
+        let firstTitle = try await FFetch(url: baseURL)
+            .withHTTPClient(client)
+            .map { entry in
+                entry["title"] as? String ?? ""
+            }
+            .first()
+
+        XCTAssertNotNil(firstTitle)
+        XCTAssertEqual(firstTitle, "Entry 0")
+    }
+
+    func testMappedFirstMethodWithEmptyResult() async throws {
+        let baseURL = URL(string: "https://example.com/not-found.json")!
+        let client = MockHTTPClient()
+        // Don't add any mock responses
+
+        let firstTitle = try await FFetch(url: baseURL)
+            .withHTTPClient(client)
+            .map { entry in
+                entry["title"] as? String ?? ""
+            }
+            .first()
+
+        XCTAssertNil(firstTitle)
+    }
+
+    func testMappedCountMethod() async throws {
+        let baseURL = URL(string: "https://example.com/query-index.json")!
+        let client = MockHTTPClient()
+        mockIndexRequests(client: client, baseURL: baseURL, total: 8)
+
+        let count = try await FFetch(url: baseURL)
+            .withHTTPClient(client)
+            .map { entry in
+                entry["title"] as? String ?? ""
+            }
+            .count()
+
+        XCTAssertEqual(count, 8)
+    }
 }
