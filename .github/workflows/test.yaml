@@ -53,8 +53,9 @@ jobs:
 
       - name: Filter coverage to source files only
         run: |
-          # Filter to only include our source files
+          # Filter to only include our source files and exclude Tests
           lcov --extract coverage.lcov "*/Sources/SwiftFFetch/*" -o coverage_filtered.lcov
+          lcov --remove coverage_filtered.lcov "*/Tests/*" -o coverage_filtered.lcov
 
       - name: Generate coverage summary
         run: |
