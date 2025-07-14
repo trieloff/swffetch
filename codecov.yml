@@ -1,0 +1,25 @@
+# Codecov configuration to exclude test files
+ignore:
+  - "Tests"
+  - "Tests/**/*"
+  - "**/Tests/**/*"
+  - "**/*Tests.swift"
+  - "**/TestSupport.swift"
+
+# Coverage settings
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
+        threshold: 1%
+
+# Comment settings
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
