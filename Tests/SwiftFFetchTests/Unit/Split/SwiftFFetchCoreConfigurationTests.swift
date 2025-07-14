@@ -239,14 +239,11 @@ final class SwiftFFetchCoreConfigurationTests: XCTestCase {
 
         // Should handle errors gracefully even with custom concurrency
         var entries: [FFetchEntry] = []
-        do {
-            for await entry in ffetch {
-                entries.append(entry)
-            }
-        } catch {
-            // Expected to throw due to network error
-            XCTAssertTrue(entries.isEmpty, "No entries should be collected on error")
+        for await entry in ffetch {
+            entries.append(entry)
         }
+        // With network error, no entries should be collected
+        XCTAssertTrue(entries.isEmpty, "No entries should be collected on error")
     }
 
     func testWithHTMLParserWithErrorConditions() {
