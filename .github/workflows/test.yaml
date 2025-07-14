@@ -94,7 +94,7 @@ jobs:
           # Extract overall coverage percentage for source files
           COVERAGE=$(xcrun llvm-cov report .build/arm64-apple-macosx/debug/SwiftFFetchPackageTests.xctest/Contents/MacOS/SwiftFFetchPackageTests \
             -instr-profile=.build/arm64-apple-macosx/debug/codecov/default.profdata \
-            | grep "Sources/SwiftFFetch" | awk '{sum+=$8*$7; total+=$7} END {printf "%.2f", sum/total}')
+            | grep "Sources/SwiftFFetch" | awk '{covered+=$8-$9; total+=$8} END {printf "%.2f", (covered/total)*100}')
 
           echo "Overall source code coverage: $COVERAGE%"
 
