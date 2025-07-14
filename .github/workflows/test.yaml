@@ -94,8 +94,8 @@ jobs:
 
           echo "Overall source code coverage: $COVERAGE%"
 
-          # Set minimum coverage threshold (80%)
-          THRESHOLD=80.0
+          # Set minimum coverage threshold (95%)
+          THRESHOLD=95.0
 
           if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
             echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
