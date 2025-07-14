@@ -2,15 +2,24 @@ included:
   - Sources
   - Tests
 
-# You can add more rules or customize as needed.
-# For example, to enable all opt-in rules:
-# opt_in_rules:
-#   - all
+# Standard rules for Sources directory
+function_body_length:
+  warning: 100
+  error: 150
 
-# Uncomment below to treat warnings as errors (recommended for CI)
-# warning_threshold: 0
+type_body_length:
+  warning: 300
+  error: 400
 
-# Exclude generated or dependency files if needed
+file_length:
+  warning: 500
+  error: 800
+
+type_name:
+  min_length: 3
+  max_length: 40
+
+# Exclude generated or dependency files
 excluded:
   - .build
   - Carthage
@@ -18,3 +27,7 @@ excluded:
   - .swiftpm
   - .git
   - .github
+
+# Override rules specifically for test files
+# Use child config approach for test-specific rules
+child_config: .swiftlint-tests.yml

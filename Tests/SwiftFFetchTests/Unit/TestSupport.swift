@@ -9,6 +9,7 @@
 
 import XCTest
 import Foundation
+import SwiftSoup
 @testable import SwiftFFetch
 
 class MockHTTPClient: FFetchHTTPClient {
@@ -138,6 +139,44 @@ class AdvancedMockHTTPClient: FFetchHTTPClient {
         requestDelays.removeAll()
         responses.removeAll()
         errors.removeAll()
+    }
+}
+
+// MARK: - FFetchTypes Tests Mock Classes
+
+class MockFFetchHTTPClient: FFetchHTTPClient {
+    var shouldThrowError: Bool = false
+    var customResponse: (Data, URLResponse)?
+
+    func fetch(_ url: URL, cacheConfig: FFetchCacheConfig) async throws -> (Data, URLResponse) {
+        if shouldThrowError {
+            throw FFetchError.networkError(NSError(domain: "MockError", code: 500))
+        }
+
+        if let customResponse = customResponse {
+            return customResponse
+        }
+
+        let data = Data("{\"message\": \"success\"}".utf8)
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: "HTTP/1.1",
+            headerFields: nil
+        )!
+        return (data, response)
+    }
+}
+
+class MockFFetchHTMLParser: FFetchHTMLParser {
+    var shouldThrowError: Bool = false
+
+    func parse(_ html: String) throws -> SwiftSoup.Document {
+        if shouldThrowError {
+            throw FFetchError.decodingError(NSError(domain: "MockError", code: 400))
+        }
+
+        return try SwiftSoup.parse(html)
     }
 }
 
