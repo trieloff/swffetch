@@ -3,6 +3,11 @@
 [![97% Vibe_Coded](https://img.shields.io/badge/97%25-Vibe_Coded-ff69b4?style=for-the-badge&logo=zedindustries&logoColor=white)](https://github.com/trieloff/vibe-coded-badge-action)
 
 [![codecov](https://img.shields.io/codecov/c/github/trieloff/swffetch?token=SROMISB0K5&style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/trieloff/swffetch)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/trieloff/swffetch/test.yaml?style=for-the-badge&logo=github)](https://github.com/trieloff/swffetch/actions)
+[![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org)
+[![Platform](https://img.shields.io/badge/Platform-iOS%2015%2B%20%7C%20macOS%2012%2B%20%7C%20tvOS%2015%2B%20%7C%20watchOS%208%2B-lightgrey?style=for-the-badge)](https://developer.apple.com)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge)](LICENSE)
+[![SPM](https://img.shields.io/badge/SPM-Compatible-brightgreen?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org/package-manager)
 
 SwiftFFetch is a Swift library for fetching and processing content from AEM (.live) Content APIs and similar JSON-based endpoints. It is designed for composable applications, making it easy to retrieve, paginate, and process content in a Swift-native way.
 
