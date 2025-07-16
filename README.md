@@ -1,6 +1,7 @@
 # SwiftFFetch
 
 [![66% Vibe_Coded](https://img.shields.io/badge/66%25-Vibe_Coded-ff69b4?style=for-the-badge&logo=zedindustries&logoColor=white)](https://github.com/trieloff/vibe-coded-badge-action)
+[![codecov](https://codecov.io/gh/trieloff/swffetch/graph/badge.svg?token=SROMISB0K5&style=for-the-badge)](https://codecov.io/gh/trieloff/swffetch)
 
 SwiftFFetch is a Swift library for fetching and processing content from AEM (.live) Content APIs and similar JSON-based endpoints. It is designed for composable applications, making it easy to retrieve, paginate, and process content in a Swift-native way.
 
