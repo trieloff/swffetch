@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KotlinFFetchTypes.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">kotlin-ffetch</a> &gt; <a href="index.source.html" class="el_package">com.terragon.kotlinffetch</a> &gt; <span class="el_source">KotlinFFetchTypes.kt</span></div><h1>KotlinFFetchTypes.kt</h1><pre class="source lang-java linenums">//
+// Copyright �� 2025 Terragon Labs. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+package com.terragon.kotlinffetch
+
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+
+/// Represents a single entry from an AEM index response
+typealias FFetchEntry = Map&lt;String, Any?&gt;
+
+/// Represents the JSON response structure from AEM indices
+<span class="nc bnc" id="L33" title="All 12 branches missed.">@Serializable</span>
+<span class="nc" id="L34">data class FFetchResponse(</span>
+    /// Total number of entries available
+<span class="nc" id="L36">    val total: Int,</span>
+    
+    /// Current offset in the result set
+<span class="nc" id="L39">    val offset: Int,</span>
+    
+    /// Maximum number of entries requested
+<span class="nc" id="L42">    val limit: Int,</span>
+    
+    /// Array of data entries
+<span class="nc" id="L45">    val data: List&lt;JsonObject&gt;</span>
+) {
+    fun toFFetchEntries(): List&lt;FFetchEntry&gt; {
+<span class="nc" id="L48">        return data.map { jsonObject -&gt;</span>
+<span class="nc" id="L49">            jsonObject.entries.associate { (key, value) -&gt;</span>
+<span class="nc" id="L50">                key to value.toString().removeSurrounding(&quot;\&quot;&quot;)</span>
+            }
+        }
+    }
+<span class="nc" id="L54">}</span>
+
+/// Errors that can occur during FFetch operations
+<span class="fc" id="L57">sealed class FFetchError(message: String, cause: Throwable? = null) : Exception(message, cause) {</span>
+<span class="fc" id="L58">    class InvalidURL(url: String) : FFetchError(&quot;Invalid URL: $url&quot;)</span>
+<span class="nc" id="L59">    class NetworkError(cause: Throwable) : FFetchError(&quot;Network error: ${cause.message}&quot;, cause)</span>
+<span class="nc" id="L60">    class DecodingError(cause: Throwable) : FFetchError(&quot;Decoding error: ${cause.message}&quot;, cause)</span>
+<span class="nc" id="L61">    object InvalidResponse : FFetchError(&quot;Invalid response format&quot;)</span>
+<span class="nc" id="L62">    object DocumentNotFound : FFetchError(&quot;Document not found&quot;)</span>
+<span class="nc" id="L63">    class OperationFailed(message: String) : FFetchError(&quot;Operation failed: $message&quot;)</span>
+<span class="fc" id="L64">}</span>
+
+/// Cache configuration for FFetch requests
+<span class="fc" id="L67">data class FFetchCacheConfig(</span>
+    /// Whether to ignore cache and always fetch from server
+<span class="fc" id="L69">    val noCache: Boolean = false,</span>
+    
+    /// Whether to only use cache and never fetch from server
+<span class="fc" id="L72">    val cacheOnly: Boolean = false,</span>
+    
+    /// Whether to use cache if available, otherwise fetch from server
+<span class="fc" id="L75">    val cacheElseLoad: Boolean = false,</span>
+    
+    /// Maximum age in seconds for cached responses
+<span class="pc" id="L78">    val maxAge: Long? = null,</span>
+    
+    /// Whether to ignore server cache control headers
+<span class="pc" id="L81">    val ignoreServerCacheControl: Boolean = false</span>
+) {
+    companion object {
+        /// Default cache configuration that respects HTTP cache control headers
+<span class="fc" id="L85">        val Default = FFetchCacheConfig()</span>
+        
+        /// Cache configuration that ignores cache and always fetches from server
+<span class="fc" id="L88">        val NoCache = FFetchCacheConfig(noCache = true)</span>
+        
+        /// Cache configuration that only uses cache and never fetches from server
+<span class="pc" id="L91">        val CacheOnly = FFetchCacheConfig(cacheOnly = true)</span>
+        
+        /// Cache configuration that uses cache if available, otherwise fetches from server
+<span class="pc" id="L94">        val CacheElseLoad = FFetchCacheConfig(cacheElseLoad = true)</span>
+    }
+<span class="fc" id="L96">}</span>
+
+/// Interface for HTTP client abstraction
+interface FFetchHTTPClient {
+<span class="nc" id="L100">    suspend fun fetch(url: String, cacheConfig: FFetchCacheConfig = FFetchCacheConfig.Default): Pair&lt;String, HttpResponse&gt;</span>
+}
+
+/// Interface for HTML parsing abstraction
+interface FFetchHTMLParser {
+    fun parse(html: String): Document
+}
+
+/// Default HTTP client implementation using Ktor
+<span class="fc" id="L109">class DefaultFFetchHTTPClient(private val client: HttpClient) : FFetchHTTPClient {</span>
+<span class="nc" id="L110">    override suspend fun fetch(url: String, cacheConfig: FFetchCacheConfig): Pair&lt;String, HttpResponse&gt; {</span>
+<span class="nc" id="L111">        try {</span>
+<span class="nc" id="L112">            val response = client.get(url)</span>
+<span class="nc" id="L113">            val content = response.bodyAsText()</span>
+<span class="nc" id="L114">            return Pair(content, response)</span>
+<span class="nc" id="L115">        } catch (e: Exception) {</span>
+<span class="nc" id="L116">            throw FFetchError.NetworkError(e)</span>
+        }
+    }
+}
+
+/// Default HTML parser implementation using Jsoup
+<span class="fc" id="L122">class DefaultFFetchHTMLParser : FFetchHTMLParser {</span>
+    override fun parse(html: String): Document {
+<span class="nc" id="L124">        return try {</span>
+<span class="nc" id="L125">            Jsoup.parse(html)</span>
+<span class="nc" id="L126">        } catch (e: Exception) {</span>
+<span class="nc" id="L127">            throw FFetchError.DecodingError(e)</span>
+        }
+    }
+}
+
+/// Configuration context for FFetch operations
+<span class="fc" id="L133">data class FFetchContext(</span>
+    /// Size of chunks to fetch during pagination
+<span class="pc" id="L135">    var chunkSize: Int = 255,</span>
+    
+    /// Whether to reload cache (deprecated - use cacheConfig instead)
+<span class="pc" id="L138">    var cacheReload: Boolean = false,</span>
+    
+    /// Cache configuration for HTTP requests
+<span class="pc" id="L141">    var cacheConfig: FFetchCacheConfig = FFetchCacheConfig.Default,</span>
+    
+    /// Name of the sheet to query (for multi-sheet responses)
+<span class="pc" id="L144">    var sheetName: String? = null,</span>
+    
+    /// HTTP client for making requests
+<span class="pc" id="L147">    var httpClient: FFetchHTTPClient = DefaultFFetchHTTPClient(HttpClient()),</span>
+    
+    /// HTML parser for parsing documents
+<span class="pc" id="L150">    var htmlParser: FFetchHTMLParser = DefaultFFetchHTMLParser(),</span>
+    
+    /// Total number of entries (set after first request)
+<span class="pc" id="L153">    var total: Int? = null,</span>
+    
+    /// Maximum number of concurrent operations
+<span class="pc" id="L156">    var maxConcurrency: Int = 5,</span>
+    
+    /// Set of allowed hostnames for document following (security feature)
+    /// By default, only the hostname of the initial request is allowed
+    /// Use &quot;*&quot; to allow all hostnames
+<span class="pc" id="L161">    var allowedHosts: MutableSet&lt;String&gt; = mutableSetOf()</span>
+<span class="fc" id="L162">)</span>
+
+/// Transform function type for map operations
+typealias FFetchTransform&lt;Input, Output&gt; = suspend (Input) -&gt; Output
+
+/// Predicate function type for filter operations
+typealias FFetchPredicate&lt;Element&gt; = suspend (Element) -&gt; Boolean
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

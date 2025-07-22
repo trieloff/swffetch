@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
+    jacoco
     `maven-publish`
 }
 
@@ -42,6 +43,16 @@ kotlin {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
 }
 
 publishing {
