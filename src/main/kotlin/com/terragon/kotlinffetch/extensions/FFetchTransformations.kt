@@ -9,6 +9,8 @@ package com.terragon.kotlinffetch.extensions
 
 import com.terragon.kotlinffetch.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.map as flowMap
+import kotlinx.coroutines.flow.filter as flowFilter
 import kotlinx.coroutines.sync.Semaphore
 import java.net.URL
 
@@ -46,12 +48,12 @@ fun FFetch.slice(start: Int, end: Int): FFetch {
 
 /// Transform mapped entries using the provided function
 fun <T, U> Flow<T>.map(transform: suspend (T) -> U): Flow<U> {
-    return map { entry -> transform(entry) }
+    return flowMap(transform)
 }
 
 /// Filter transformed entries using the provided predicate
 fun <T> Flow<T>.filter(predicate: suspend (T) -> Boolean): Flow<T> {
-    return filter { entry -> predicate(entry) }
+    return flowFilter(predicate)
 }
 
 /// Limit the number of transformed entries returned
