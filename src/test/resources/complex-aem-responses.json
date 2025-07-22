@@ -1,0 +1,192 @@
+{
+  "blogResponse": {
+    "total": 1500,
+    "offset": 0,
+    "limit": 50,
+    "data": [
+      {
+        "path": "/content/blog/2024/web-performance",
+        "title": "Optimizing Web Performance in 2024",
+        "description": "A comprehensive guide to modern web performance optimization techniques",
+        "author": "Sarah Chen",
+        "publishDate": "2024-01-15T10:30:00.000Z",
+        "lastModified": "2024-01-20T14:45:00.000Z",
+        "tags": ["performance", "web", "optimization", "core-web-vitals"],
+        "categories": {
+          "primary": "Technology",
+          "secondary": ["Web Development", "Performance"]
+        },
+        "metadata": {
+          "template": "blog-post-template",
+          "language": "en",
+          "region": "global",
+          "seo": {
+            "metaTitle": "Web Performance Optimization Guide 2024",
+            "metaDescription": "Learn the latest techniques for optimizing web performance",
+            "keywords": ["web performance", "optimization", "core web vitals", "speed"]
+          },
+          "analytics": {
+            "trackingId": "WP-2024-001",
+            "category": "educational",
+            "contentType": "long-form"
+          }
+        },
+        "status": "published",
+        "featured": true,
+        "readTime": 12,
+        "viewCount": 25430,
+        "shareCount": 342,
+        "commentCount": 89,
+        "relatedPosts": [
+          "/content/blog/2023/web-vitals-explained",
+          "/content/blog/2024/javascript-performance"
+        ]
+      },
+      {
+        "path": "/content/blog/2024/kotlin-coroutines",
+        "title": "Mastering Kotlin Coroutines for Android Development",
+        "description": "Deep dive into coroutines for building responsive Android applications",
+        "author": "Michael Rodriguez",
+        "publishDate": "2024-01-18T09:15:00.000Z",
+        "lastModified": "2024-01-22T16:20:00.000Z",
+        "tags": ["kotlin", "android", "coroutines", "async", "mobile"],
+        "categories": {
+          "primary": "Mobile Development",
+          "secondary": ["Android", "Kotlin", "Concurrency"]
+        },
+        "metadata": {
+          "template": "technical-tutorial-template",
+          "language": "en",
+          "region": "global",
+          "difficulty": "intermediate",
+          "codeExamples": 15,
+          "estimatedCompletionTime": "45 minutes"
+        },
+        "status": "published",
+        "featured": false,
+        "readTime": 18,
+        "viewCount": 18760,
+        "shareCount": 156,
+        "commentCount": 34,
+        "codeRepository": "https://github.com/example/kotlin-coroutines-tutorial"
+      }
+    ]
+  },
+  "productCatalogResponse": {
+    "total": 850,
+    "offset": 100,
+    "limit": 25,
+    "data": [
+      {
+        "sku": "LAPTOP-001",
+        "name": "Professional Laptop Pro 15\"",
+        "description": "High-performance laptop for creative professionals",
+        "price": {
+          "currency": "USD",
+          "amount": 2499.99,
+          "originalAmount": 2799.99,
+          "discount": {
+            "type": "percentage",
+            "value": 10.71,
+            "endDate": "2024-02-29T23:59:59.000Z"
+          }
+        },
+        "specifications": {
+          "processor": "Intel Core i7-13700H",
+          "memory": "32GB DDR5",
+          "storage": "1TB NVMe SSD",
+          "display": "15.6\" 4K OLED",
+          "graphics": "NVIDIA RTX 4060 8GB",
+          "battery": "100Wh",
+          "weight": "2.1kg"
+        },
+        "availability": {
+          "inStock": true,
+          "quantity": 45,
+          "warehouses": ["US-EAST", "US-WEST", "EU-CENTRAL"],
+          "estimatedShipping": "2-3 business days"
+        },
+        "reviews": {
+          "averageRating": 4.7,
+          "totalReviews": 234,
+          "ratingDistribution": {
+            "5": 145,
+            "4": 67,
+            "3": 18,
+            "2": 3,
+            "1": 1
+          }
+        },
+        "images": [
+          "/content/dam/products/laptop-001-main.jpg",
+          "/content/dam/products/laptop-001-side.jpg",
+          "/content/dam/products/laptop-001-keyboard.jpg"
+        ],
+        "categories": ["Electronics", "Computers", "Laptops", "Professional"],
+        "tags": ["gaming", "creative", "professional", "high-performance"],
+        "metadata": {
+          "dateAdded": "2023-11-15T08:00:00.000Z",
+          "lastUpdated": "2024-01-20T14:30:00.000Z",
+          "vendor": "TechCorp",
+          "warranty": "3 years",
+          "energyRating": "A+++"
+        }
+      }
+    ]
+  },
+  "newsResponse": {
+    "total": 2500,
+    "offset": 0,
+    "limit": 10,
+    "data": [
+      {
+        "id": "news-20240122-001",
+        "headline": "Breaking: Major Tech Company Announces Revolutionary AI Platform",
+        "summary": "Industry leaders unveiled a groundbreaking artificial intelligence platform that promises to transform how businesses operate",
+        "content": "In a landmark announcement today, leading technology companies revealed their latest artificial intelligence platform...",
+        "author": {
+          "name": "Alex Thompson",
+          "title": "Senior Technology Reporter",
+          "email": "a.thompson@newsorg.com",
+          "bio": "Alex has been covering technology news for over 10 years"
+        },
+        "publishDate": "2024-01-22T15:30:00.000Z",
+        "lastModified": "2024-01-22T16:45:00.000Z",
+        "category": "Technology",
+        "subcategories": ["Artificial Intelligence", "Enterprise Software"],
+        "tags": ["AI", "machine learning", "enterprise", "innovation"],
+        "location": {
+          "city": "San Francisco",
+          "state": "California",
+          "country": "United States",
+          "timezone": "America/Los_Angeles"
+        },
+        "media": {
+          "featuredImage": "/content/dam/news/ai-platform-announcement.jpg",
+          "imageCaption": "CEO presenting the new AI platform at tech conference",
+          "videoUrl": "https://video.newsorg.com/ai-announcement-2024",
+          "gallery": [
+            "/content/dam/news/ai-demo-1.jpg",
+            "/content/dam/news/ai-demo-2.jpg",
+            "/content/dam/news/conference-hall.jpg"
+          ]
+        },
+        "engagement": {
+          "views": 125000,
+          "shares": 3400,
+          "comments": 567,
+          "likes": 8900
+        },
+        "seo": {
+          "metaTitle": "Revolutionary AI Platform Announced by Major Tech Company",
+          "metaDescription": "Breaking news on the latest AI innovation from leading tech companies",
+          "canonicalUrl": "https://newsorg.com/tech/ai-platform-announcement-2024",
+          "keywords": ["AI announcement", "technology news", "artificial intelligence", "innovation"]
+        },
+        "status": "published",
+        "priority": "breaking",
+        "featured": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "description": "This file contains examples of malformed JSON that might be encountered in real-world scenarios",
+  "samples": {
+    "trailingCommas": {
+      "total": 2,
+      "offset": 0,
+      "limit": 2,
+      "data": [
+        {
+          "title": "Article with trailing comma",
+          "author": "Test Author",
+        },
+        {
+          "title": "Another article",
+          "content": "Some content",
+        }
+      ],
+    },
+    "quotingIssues": {
+      "total": 1,
+      "offset": 0,
+      "limit": 1,
+      "data": [
+        {
+          "title": "Article with \"nested quotes\" and issues",
+          "description": "Content with 'mixed quotes' and \"problems\"",
+          "specialChars": "Text with \n newlines \t tabs and \\ backslashes"
+        }
+      ]
+    },
+    "typeInconsistencies": {
+      "total": "3",
+      "offset": "0",
+      "limit": "3",
+      "data": [
+        {
+          "id": 123,
+          "title": "Numeric ID as number",
+          "priority": "high"
+        },
+        {
+          "id": "456",
+          "title": "Numeric ID as string",
+          "priority": 1
+        },
+        {
+          "id": null,
+          "title": "Null ID",
+          "priority": true
+        }
+      ]
+    },
+    "extraWhitespace": {
+      "total":    50   ,
+      "offset":  0    ,
+      "limit":   10   ,
+      "data": [
+        {
+          "title"   :   "Lots of whitespace"   ,
+          "author"  :   "Whitespace Author"    
+        }
+      ]
+    },
+    "unicodeIssues": {
+      "total": 2,
+      "offset": 0,
+      "limit": 2,
+      "data": [
+        {
+          "title": "Unicode test: 🚀 ✨ 🌟",
+          "content": "Mixed unicode: café naïve résumé 中文 العربية русский",
+          "emoji": "😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰"
+        },
+        {
+          "title": "Special chars: © ® ™ € £ ¥ § ¶ †",
+          "math": "∑ ∫ ∂ ∆ π ∞ ≤ ≥ ≠ ≈ ± × ÷",
+          "arrows": "← → ↑ ↓ ↔ ↕ ↖ ↗ ↘ ↙"
+        }
+      ]
+    },
+    "deepNesting": {
+      "total": 1,
+      "offset": 0,
+      "limit": 1,
+      "data": [
+        {
+          "level1": {
+            "level2": {
+              "level3": {
+                "level4": {
+                  "level5": {
+                    "level6": {
+                      "level7": {
+                        "deepValue": "Very deep nesting",
+                        "array": [1, 2, 3, {"nested": "in array"}]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "emptyAndNullValues": {
+      "total": 3,
+      "offset": 0,
+      "limit": 3,
+      "data": [
+        {
+          "title": "",
+          "description": null,
+          "tags": [],
+          "metadata": {}
+        },
+        {
+          "title": "   ",
+          "description": "null",
+          "content": "undefined"
+        },
+        {
+          "title": null,
+          "description": "",
+          "active": null,
+          "count": 0
+        }
+      ]
+    },
+    "largeNumbers": {
+      "total": 2,
+      "offset": 0,
+      "limit": 2,
+      "data": [
+        {
+          "bigInteger": 9223372036854775807,
+          "bigDecimal": 123456789.987654321,
+          "scientific": 1.23e-10,
+          "percentage": 99.999999
+        },
+        {
+          "timestamp": 1705843200000,
+          "coordinate": -122.4194183,
+          "precision": 0.00000001
+        }
+      ]
+    },
+    "mixedArrayTypes": {
+      "total": 1,
+      "offset": 0,
+      "limit": 1,
+      "data": [
+        {
+          "mixedArray": [
+            "string",
+            123,
+            true,
+            null,
+            {"object": "in array"},
+            ["nested", "array"],
+            45.67
+          ],
+          "numberArray": [1, "2", 3.0, "4.5"],
+          "booleanArray": [true, "false", 1, 0, "yes", "no"]
+        }
+      ]
+    },
+    "edgeCaseStrings": {
+      "total": 1,
+      "offset": 0,
+      "limit": 1,
+      "data": [
+        {
+          "empty": "",
+          "singleChar": "a",
+          "veryLong": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+          "specialEscapes": "Line 1\nLine 2\tTabbed\r\nWindows newline\\Backslash\"Quote'Apostrophe",
+          "htmlEntities": "&lt;script&gt;alert('test');&lt;/script&gt;",
+          "urlEncoded": "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue%26other%3Dtest"
+        }
+      ]
+    }
+  }
+}
