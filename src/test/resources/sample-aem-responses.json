@@ -1,0 +1,311 @@
+{
+  "blog_posts_page_1": {
+    "total": 150,
+    "offset": 0,
+    "limit": 10,
+    "data": [
+      {
+        "path": "/blog/2024/01/15/new-product-launch",
+        "title": "Exciting New Product Launch",
+        "author": "John Doe",
+        "publishedDate": "2024-01-15T10:30:00Z",
+        "tags": "product,launch,news",
+        "excerpt": "We are thrilled to announce our latest product that will revolutionize the industry.",
+        "imageUrl": "/content/dam/images/product-hero.jpg",
+        "readTime": 5,
+        "featured": true,
+        "lastModified": 1705312200,
+        "template": "blog-post",
+        "category": "Product News"
+      },
+      {
+        "path": "/blog/2024/01/10/industry-insights",
+        "title": "Key Industry Insights for 2024",
+        "author": "Jane Smith",
+        "publishedDate": "2024-01-10T14:45:00Z",
+        "tags": "industry,insights,trends",
+        "excerpt": "Looking ahead to 2024, several key trends are shaping our industry landscape.",
+        "imageUrl": "/content/dam/images/insights-hero.jpg",
+        "readTime": 8,
+        "featured": false,
+        "lastModified": 1704895500,
+        "template": "blog-post",
+        "category": "Industry Analysis"
+      },
+      {
+        "path": "/blog/2024/01/05/year-end-review",
+        "title": "2023 Year-End Review",
+        "author": "Michael Johnson",
+        "publishedDate": "2024-01-05T09:00:00Z",
+        "tags": "review,2023,analysis",
+        "excerpt": "Reflecting on the achievements and challenges of 2023.",
+        "imageUrl": "/content/dam/images/review-hero.jpg",
+        "readTime": 12,
+        "featured": true,
+        "lastModified": 1704448800,
+        "template": "blog-post",
+        "category": "Company News"
+      }
+    ]
+  },
+  
+  "products_electronics": {
+    "total": 45,
+    "offset": 0,
+    "limit": 20,
+    "data": [
+      {
+        "path": "/products/electronics/smartphone-x1",
+        "name": "Smartphone X1",
+        "category": "Electronics",
+        "subcategory": "Mobile Phones",
+        "price": 699.99,
+        "sku": "PHONE-X1-001",
+        "inStock": true,
+        "stockQuantity": 150,
+        "description": "Latest smartphone with advanced camera and AI features",
+        "features": "6.5\" OLED display, 48MP camera, 5G connectivity",
+        "brand": "TechCorp",
+        "warranty": "2 years",
+        "rating": 4.5,
+        "reviewCount": 124
+      },
+      {
+        "path": "/products/electronics/laptop-pro-15",
+        "name": "Laptop Pro 15\"",
+        "category": "Electronics",
+        "subcategory": "Computers",
+        "price": 1299.99,
+        "sku": "LAPTOP-PRO-15",
+        "inStock": true,
+        "stockQuantity": 75,
+        "description": "Professional laptop for power users and creators",
+        "features": "Intel i7, 16GB RAM, 512GB SSD, 15.6\" 4K display",
+        "brand": "TechCorp",
+        "warranty": "3 years",
+        "rating": 4.8,
+        "reviewCount": 89
+      },
+      {
+        "path": "/products/electronics/wireless-headphones",
+        "name": "Premium Wireless Headphones",
+        "category": "Electronics",
+        "subcategory": "Audio",
+        "price": 299.99,
+        "sku": "HEADPHONES-WL-001",
+        "inStock": false,
+        "stockQuantity": 0,
+        "description": "Noise-cancelling wireless headphones with premium sound",
+        "features": "Active noise cancellation, 30-hour battery, Bluetooth 5.0",
+        "brand": "AudioTech",
+        "warranty": "1 year",
+        "rating": 4.3,
+        "reviewCount": 203
+      }
+    ]
+  },
+  
+  "empty_result": {
+    "total": 0,
+    "offset": 0,
+    "limit": 255,
+    "data": []
+  },
+  
+  "large_dataset_page_1": {
+    "total": 10000,
+    "offset": 0,
+    "limit": 100,
+    "data": [
+      {
+        "id": 1,
+        "path": "/content/item-0001",
+        "title": "Content Item 1",
+        "type": "article",
+        "lastModified": 1705312200,
+        "status": "published"
+      },
+      {
+        "id": 2,
+        "path": "/content/item-0002",
+        "title": "Content Item 2",
+        "type": "page",
+        "lastModified": 1705312300,
+        "status": "published"
+      }
+    ]
+  },
+  
+  "error_scenarios": {
+    "malformed_json": "{ \"total\": 1, \"offset\": 0, \"limit\": 25, \"data\": [ { \"path\": \"/test\" \"title\": \"Missing comma\" } ] }",
+    "missing_fields": "{\"total\": 1, \"offset\": 0}",
+    "invalid_data_types": "{\"total\": \"not_a_number\", \"offset\": 0, \"limit\": 25, \"data\": []}",
+    "empty_response": "{}"
+  },
+  
+  "special_characters": {
+    "total": 3,
+    "offset": 0,
+    "limit": 25,
+    "data": [
+      {
+        "path": "/content/international/español",
+        "title": "Título en Español: áéíóúñü",
+        "description": "Descripción con caracteres especiales y tildes",
+        "content": "¡Hola mundo! Esta es una página en español.",
+        "language": "es-ES"
+      },
+      {
+        "path": "/content/international/français",
+        "title": "Titre en Français: àâäéèêëïîôùûüÿç",
+        "description": "Description avec caractères accentués français",
+        "content": "Bonjour le monde! Ceci est une page en français.",
+        "language": "fr-FR"
+      },
+      {
+        "path": "/content/international/unicode",
+        "title": "Unicode Test: 你好世界 🌍 العالم مرحبا",
+        "description": "Testing various Unicode characters and emojis",
+        "content": "Hello World in multiple languages: 🇺🇸🇪🇸🇫🇷🇩🇪🇯🇵🇨🇳",
+        "symbols": "©️®️™️€£¥¢₹₽₴₦₵",
+        "math": "∑∏∫√∞≠≤≥±×÷"
+      }
+    ]
+  },
+  
+  "nested_data_example": {
+    "total": 2,
+    "offset": 0,
+    "limit": 25,
+    "data": [
+      {
+        "path": "/content/complex-structure",
+        "title": "Complex Data Structure",
+        "metadata": {
+          "author": "Complex Author",
+          "tags": ["complex", "nested", "test"],
+          "settings": {
+            "visible": true,
+            "searchable": false,
+            "indexed": true
+          }
+        },
+        "content_blocks": [
+          {
+            "type": "text",
+            "value": "This is a text block"
+          },
+          {
+            "type": "image",
+            "value": "/content/dam/images/test.jpg",
+            "alt": "Test image"
+          }
+        ],
+        "analytics": {
+          "views": 1234,
+          "shares": 56,
+          "comments": 12,
+          "engagement_rate": 0.045
+        }
+      }
+    ]
+  },
+  
+  "multi_sheet_example": {
+    "total": 5,
+    "offset": 0,
+    "limit": 25,
+    "data": [
+      {
+        "path": "/products/sheet1/item1",
+        "sheet": "products",
+        "name": "Product from Sheet 1",
+        "category": "Category A",
+        "price": 100.00
+      },
+      {
+        "path": "/products/sheet1/item2",
+        "sheet": "products",
+        "name": "Another Product",
+        "category": "Category B",
+        "price": 200.00
+      },
+      {
+        "path": "/customers/sheet2/customer1",
+        "sheet": "customers",
+        "name": "John Customer",
+        "email": "john@example.com",
+        "tier": "premium"
+      }
+    ]
+  },
+  
+  "performance_test_data": {
+    "total": 50000,
+    "offset": 0,
+    "limit": 1000,
+    "data": [
+      {
+        "id": 1,
+        "path": "/content/perf-test/item-00001",
+        "title": "Performance Test Item 1",
+        "content": "This is test content for performance testing. It contains enough text to simulate real-world content size and complexity.",
+        "tags": "performance,test,automation,large-dataset",
+        "timestamp": 1705312200,
+        "size": 2048,
+        "checksum": "abc123def456",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  
+  "edge_cases": {
+    "null_values": {
+      "total": 2,
+      "offset": 0,
+      "limit": 25,
+      "data": [
+        {
+          "path": "/content/with-nulls",
+          "title": "Item with null values",
+          "description": null,
+          "author": null,
+          "publishedDate": "2024-01-01T00:00:00Z",
+          "tags": null
+        }
+      ]
+    },
+    "boolean_values": {
+      "total": 1,
+      "offset": 0,
+      "limit": 25,
+      "data": [
+        {
+          "path": "/content/booleans",
+          "title": "Boolean Test",
+          "published": true,
+          "featured": false,
+          "archived": true,
+          "visible": false
+        }
+      ]
+    },
+    "numeric_values": {
+      "total": 1,
+      "offset": 0,
+      "limit": 25,
+      "data": [
+        {
+          "path": "/content/numbers",
+          "title": "Numeric Values Test",
+          "integer": 42,
+          "float": 3.14159,
+          "negative": -100,
+          "zero": 0,
+          "large_number": 9223372036854775807,
+          "scientific": 1.23e10
+        }
+      ]
+    }
+  }
+}
