@@ -1,0 +1,155 @@
+# Malicious URL Patterns for Security Testing
+# KotlinFFetch Document Following Security Tests
+#
+# This file contains various URL patterns that should be blocked
+# by the hostname security restrictions in document following.
+
+# File Protocol URLs (should be blocked)
+file:///etc/passwd
+file:///c:/windows/system32/config/sam
+file:///proc/self/environ
+file:///dev/random
+file://localhost/etc/hosts
+file:///var/log/auth.log
+
+# Data URLs (should be blocked due to no hostname)
+data:text/html,<script>alert('XSS')</script>
+data:text/html,<h1>Malicious Content</h1>
+data:image/svg+xml,<svg><script>alert('XSS')</script></svg>
+data:application/javascript,alert('malicious code')
+data:text/plain,sensitive data here
+
+# JavaScript URLs (should be blocked)
+javascript:alert('XSS')
+javascript:void(0)
+javascript:window.location='http://malicious.com'
+javascript:document.write('<script>alert("XSS")</script>')
+javascript:eval('malicious code')
+
+# FTP URLs (should be blocked due to hostname restrictions)
+ftp://malicious.com/file.txt
+ftp://user:pass@malicious.com/secret.txt
+ftp://anonymous@malicious.com/public/file.txt
+
+# LDAP URLs (should be blocked)
+ldap://malicious.com/query
+ldap://malicious.com:389/cn=users,dc=example,dc=com
+ldaps://malicious.com/secure-query
+
+# Gopher URLs (should be blocked)
+gopher://malicious.com/file
+gopher://malicious.com:70/1/directory
+
+# Telnet URLs (should be blocked)
+telnet://malicious.com:23
+telnet://user@malicious.com
+
+# Custom/Unknown Protocols (should be blocked)
+custom://malicious.com/resource
+unknown://malicious.com/data
+malicious://example.com/payload
+
+# URLs with suspicious hostnames
+http://malicious-site.com/document.html
+https://evil-domain.org/content.html
+http://phishing-site.net/fake-login.html
+https://malware-host.biz/infected.html
+
+# URLs with IP addresses (may be suspicious)
+http://192.168.1.1/internal-document.html
+https://10.0.0.1/private-content.html
+http://127.0.0.1:8080/localhost-content.html
+https://172.16.0.1/network-document.html
+
+# URLs with suspicious paths
+https://legitimate.com/../../../etc/passwd
+https://legitimate.com/admin/config/database.xml
+https://legitimate.com/.env
+https://legitimate.com/wp-config.php
+https://legitimate.com/.git/config
+
+# URLs with suspicious query parameters
+https://legitimate.com/redirect?url=javascript:alert('xss')
+https://legitimate.com/proxy?target=file:///etc/passwd
+https://legitimate.com/fetch?src=http://malicious.com/payload
+https://legitimate.com/include?file=../../../etc/passwd
+
+# URLs with suspicious fragments
+https://legitimate.com/page#javascript:alert('xss')
+https://legitimate.com/content#<script>alert('xss')</script>
+
+# Encoded malicious URLs
+https://legitimate.com/%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+https://legitimate.com/%6A%61%76%61%73%63%72%69%70%74%3A%61%6C%65%72%74%28%27%78%73%73%27%29
+file%3A%2F%2F%2Fetc%2Fpasswd
+
+# URLs with unusual ports
+https://legitimate.com:4444/suspicious-content.html
+http://legitimate.com:8888/hidden-admin.html
+https://legitimate.com:31337/hacker-content.html
+
+# URLs with suspicious userinfo
+https://admin:password@legitimate.com/secure-content.html
+http://root@legitimate.com/system-files.html
+https://user:123456@legitimate.com/private.html
+
+# Unicode/IDN homograph attack URLs
+https://аpple.com/document.html  # Cyrillic 'а' instead of Latin 'a'
+https://g00gle.com/content.html  # Numbers instead of letters
+https://microsоft.com/file.html  # Cyrillic 'о' instead of Latin 'o'
+
+# URLs with suspicious TLDs
+https://suspicious.tk/document.html
+https://malicious.ml/content.html
+https://phishing.ga/fake-page.html
+https://spam.cf/unwanted-content.html
+
+# Extremely long URLs (potential buffer overflow attempts)
+https://legitimate.com/very-long-path-that-goes-on-and-on-and-on-and-continues-for-a-very-long-time-to-potentially-cause-buffer-overflow-or-other-issues-with-url-parsing-and-handling-systems-that-might-not-properly-validate-input-length/document.html
+
+# URLs with null bytes and control characters
+https://legitimate.com/path%00/document.html
+https://legitimate.com/path%0A/document.html
+https://legitimate.com/path%0D/document.html
+
+# URLs targeting internal/private networks
+https://internal-server.local/confidential.html
+https://company-intranet.corp/employee-data.html
+https://dev-server.internal/debug-info.html
+https://staging-env.local/test-data.html
+
+# URLs with suspicious query strings attempting injections
+https://legitimate.com/search?q=<script>alert('xss')</script>
+https://legitimate.com/user?id=1' OR '1'='1
+https://legitimate.com/file?path=../../../etc/passwd
+https://legitimate.com/api?callback=maliciousFunction
+
+# Shortened URLs (could hide malicious destinations)
+# Note: These would need to be expanded to check actual destination
+http://bit.ly/suspicious-link
+https://tinyurl.com/malicious
+https://t.co/evil-payload
+http://goo.gl/phishing-site
+
+# Comments for additional context:
+# 
+# Security Considerations:
+# 1. All file:// URLs should be blocked completely
+# 2. data: URLs should be blocked as they have no hostname
+# 3. javascript: URLs should be blocked completely
+# 4. Non-HTTP(S) protocols should generally be blocked
+# 5. IP addresses may need special handling
+# 6. Suspicious paths and query parameters should be logged
+# 7. IDN homograph attacks require careful validation
+# 8. Extremely long URLs should be truncated or rejected
+# 9. Control characters in URLs should be rejected
+# 10. Internal network URLs should be blocked in production
+
+# Test Categories:
+# - Protocol-based attacks: file://, javascript:, data:
+# - Network-based attacks: internal IPs, suspicious hosts
+# - Path traversal attacks: ../ sequences
+# - Injection attacks: XSS, SQL injection attempts
+# - Social engineering: IDN homographs, shortened URLs
+# - Buffer overflow attempts: extremely long URLs
+# - Encoding attacks: URL-encoded malicious content
