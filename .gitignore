@@ -2,6 +2,16 @@ coverage/
 node_modules/
 .vscode/
 
+# Kotlin/Gradle
+build/
+.gradle/
+*.iml
+*.ipr
+*.iws
+out/
+gradle.properties
+local.properties
+
 # Swift Package Manager & Xcode
 .build/
 .swiftpm/
