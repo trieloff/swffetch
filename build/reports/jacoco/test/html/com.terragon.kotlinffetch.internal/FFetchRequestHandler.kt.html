@@ -17,49 +17,49 @@ import java.net.URL
 internal object FFetchRequestHandler {
     
     /// Perform paginated requests and emit entries
-<span class="nc" id="L20">    suspend fun performRequest(</span>
+<span class="fc" id="L20">    suspend fun performRequest(</span>
         url: URL,
         context: FFetchContext,
         emit: suspend (FFetchEntry) -&gt; Unit
     ) {
-<span class="nc" id="L25">        var mutableContext = context.copy()</span>
+<span class="fc" id="L25">        var mutableContext = context.copy()</span>
         
-<span class="nc" id="L27">        var offset = 0</span>
+<span class="fc" id="L27">        var offset = 0</span>
         
-<span class="nc" id="L29">        while (true) {</span>
+<span class="fc" id="L29">        while (true) {</span>
             // Check if we've reached the total (if known)
-<span class="nc bnc" id="L31" title="All 2 branches missed.">            mutableContext.total?.let { total -&gt;</span>
-<span class="nc bnc" id="L32" title="All 2 branches missed.">                if (offset &gt;= total) return@performRequest</span>
-<span class="nc" id="L33">            }</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">            mutableContext.total?.let { total -&gt;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">                if (offset &gt;= total) return@performRequest</span>
+<span class="fc" id="L33">            }</span>
             
-<span class="nc" id="L35">            val requestURL = buildRequestURL(</span>
-<span class="nc" id="L36">                url = url,</span>
-<span class="nc" id="L37">                offset = offset,</span>
-<span class="nc" id="L38">                context = mutableContext</span>
+<span class="fc" id="L35">            val requestURL = buildRequestURL(</span>
+<span class="fc" id="L36">                url = url,</span>
+<span class="fc" id="L37">                offset = offset,</span>
+<span class="fc" id="L38">                context = mutableContext</span>
             )
             
-<span class="nc" id="L41">            val fetchResponse = executeRequest(</span>
-<span class="nc" id="L42">                url = requestURL,</span>
-<span class="nc" id="L43">                context = mutableContext</span>
+<span class="fc" id="L41">            val fetchResponse = executeRequest(</span>
+<span class="fc" id="L42">                url = requestURL,</span>
+<span class="fc" id="L43">                context = mutableContext</span>
             )
             
             // Update total if this is the first request
-<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (mutableContext.total == null) {</span>
-<span class="nc" id="L48">                mutableContext.total = fetchResponse.total</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (mutableContext.total == null) {</span>
+<span class="fc" id="L48">                mutableContext.total = fetchResponse.total</span>
             }
             
             // Emit entries
-<span class="nc" id="L52">            val entries = fetchResponse.toFFetchEntries()</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">            for (entry in entries) {</span>
-<span class="nc" id="L54">                emit(entry)</span>
+<span class="fc" id="L52">            val entries = fetchResponse.toFFetchEntries()</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            for (entry in entries) {</span>
+<span class="fc" id="L54">                emit(entry)</span>
             }
             
             // Check if we've reached the end
-<span class="nc bnc" id="L58" title="All 2 branches missed.">            if (offset + mutableContext.chunkSize &gt;= fetchResponse.total) {</span>
-<span class="nc" id="L59">                return@performRequest</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (offset + mutableContext.chunkSize &gt;= fetchResponse.total) {</span>
+<span class="fc" id="L59">                return@performRequest</span>
             }
             
-<span class="nc" id="L62">            offset += mutableContext.chunkSize</span>
+<span class="fc" id="L62">            offset += mutableContext.chunkSize</span>
         }
     }
     
@@ -69,18 +69,18 @@ internal object FFetchRequestHandler {
         offset: Int,
         context: FFetchContext
     ): String {
-<span class="nc" id="L72">        val baseUrl = url.toString()</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        val separator = if (baseUrl.contains(&quot;?&quot;)) &quot;&amp;&quot; else &quot;?&quot;</span>
+<span class="fc" id="L72">        val baseUrl = url.toString()</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        val separator = if (baseUrl.contains(&quot;?&quot;)) &quot;&amp;&quot; else &quot;?&quot;</span>
         
-<span class="nc" id="L75">        var params = mutableListOf&lt;String&gt;()</span>
-<span class="nc" id="L76">        params.add(&quot;offset=$offset&quot;)</span>
-<span class="nc" id="L77">        params.add(&quot;limit=${context.chunkSize}&quot;)</span>
+<span class="fc" id="L75">        var params = mutableListOf&lt;String&gt;()</span>
+<span class="fc" id="L76">        params.add(&quot;offset=$offset&quot;)</span>
+<span class="fc" id="L77">        params.add(&quot;limit=${context.chunkSize}&quot;)</span>
         
-<span class="nc bnc" id="L79" title="All 2 branches missed.">        context.sheetName?.let { sheet -&gt;</span>
-<span class="nc" id="L80">            params.add(&quot;sheet=$sheet&quot;)</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        context.sheetName?.let { sheet -&gt;</span>
+<span class="fc" id="L80">            params.add(&quot;sheet=$sheet&quot;)</span>
         }
         
-<span class="nc" id="L83">        return &quot;$baseUrl$separator${params.joinToString(&quot;&amp;&quot;)}&quot;</span>
+<span class="fc" id="L83">        return &quot;$baseUrl$separator${params.joinToString(&quot;&amp;&quot;)}&quot;</span>
     }
     
     /// Execute HTTP request and parse response
@@ -88,30 +88,30 @@ internal object FFetchRequestHandler {
         url: String,
         context: FFetchContext
     ): FFetchResponse {
-<span class="nc" id="L91">        try {</span>
-<span class="nc" id="L92">            val (data, response) = context.httpClient.fetch(url, context.cacheConfig)</span>
+<span class="fc" id="L91">        try {</span>
+<span class="fc" id="L92">            val (data, response) = context.httpClient.fetch(url, context.cacheConfig)</span>
             
-<span class="nc" id="L94">            validateHTTPResponse(response)</span>
+<span class="fc" id="L94">            validateHTTPResponse(response)</span>
             
             // Parse JSON response
-<span class="nc" id="L97">            return Json.decodeFromString(FFetchResponse.serializer(), data)</span>
+<span class="fc" id="L97">            return Json.decodeFromString(FFetchResponse.serializer(), data)</span>
             
-<span class="nc" id="L99">        } catch (e: FFetchError) {</span>
-<span class="nc" id="L100">            throw e</span>
-<span class="nc" id="L101">        } catch (e: Exception) {</span>
-<span class="nc" id="L102">            throw FFetchError.NetworkError(e)</span>
+<span class="fc" id="L99">        } catch (e: FFetchError) {</span>
+<span class="fc" id="L100">            throw e</span>
+<span class="fc" id="L101">        } catch (e: Exception) {</span>
+<span class="fc" id="L102">            throw FFetchError.NetworkError(e)</span>
         }
     }
     
     /// Validate HTTP response status
     private fun validateHTTPResponse(response: HttpResponse) {
-<span class="nc bnc" id="L108" title="All 3 branches missed.">        when (response.status.value) {</span>
-<span class="nc" id="L109">            200 -&gt; return // OK</span>
-<span class="nc" id="L110">            404 -&gt; throw FFetchError.DocumentNotFound</span>
-<span class="nc" id="L111">            else -&gt; throw FFetchError.NetworkError(</span>
-<span class="nc" id="L112">                RuntimeException(&quot;HTTP ${response.status.value}: ${response.status.description}&quot;)</span>
+<span class="fc bfc" id="L108" title="All 3 branches covered.">        when (response.status.value) {</span>
+<span class="fc" id="L109">            200 -&gt; return // OK</span>
+<span class="fc" id="L110">            404 -&gt; throw FFetchError.DocumentNotFound</span>
+<span class="fc" id="L111">            else -&gt; throw FFetchError.NetworkError(</span>
+<span class="fc" id="L112">                RuntimeException(&quot;HTTP ${response.status.value}: ${response.status.description}&quot;)</span>
             )
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.terragon.kotlinffetch.FFetchTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-07-22T13:25:12.631Z" hostname="e2b.local" time="1.084">
+<testsuite name="com.terragon.kotlinffetch.FFetchTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-07-22T16:10:22" hostname="e2b.local" time="0.604">
   <properties/>
-  <testcase name="testAllowHostnameConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.907"/>
-  <testcase name="testCacheConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.018"/>
-  <testcase name="testAllowMultipleHostnamesConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.011"/>
-  <testcase name="testFFetchConvenienceFunction()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.013"/>
-  <testcase name="testMaxConcurrencyConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.012"/>
-  <testcase name="testCacheConfigDefaults()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.005"/>
-  <testcase name="testSheetConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.024"/>
-  <testcase name="testFFetchInitWithInvalidURL()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.006"/>
-  <testcase name="testReloadCacheConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.01"/>
-  <testcase name="testFFetchInitWithValidURL()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.008"/>
-  <testcase name="testChunksConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.008"/>
-  <testcase name="testFFetchContextDefaults()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.012"/>
+  <testcase name="testAllowHostnameConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.486"/>
+  <testcase name="testCacheConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.013"/>
+  <testcase name="testAllowMultipleHostnamesConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.009"/>
+  <testcase name="testFFetchConvenienceFunction()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.011"/>
+  <testcase name="testMaxConcurrencyConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.009"/>
+  <testcase name="testCacheConfigDefaults()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.002"/>
+  <testcase name="testSheetConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.012"/>
+  <testcase name="testFFetchInitWithInvalidURL()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.003"/>
+  <testcase name="testReloadCacheConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.009"/>
+  <testcase name="testFFetchInitWithValidURL()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.011"/>
+  <testcase name="testChunksConfiguration()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.007"/>
+  <testcase name="testFFetchContextDefaults()" classname="com.terragon.kotlinffetch.FFetchTest" time="0.005"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.terragon.kotlinffetch.FFetchResponseTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2025-07-22T16:10:21" hostname="e2b.local" time="0.534">
+  <properties/>
+  <testcase name="testRealAEMResponseExample()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.43"/>
+  <testcase name="testMissingRequiredFields()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.033"/>
+  <testcase name="testResponseWithSpecialCharacters()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.006"/>
+  <testcase name="testToFFetchEntriesWithComplexValues()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.011"/>
+  <testcase name="testEmptyResponse()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.004"/>
+  <testcase name="testMultiSheetResponseStructure()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.006"/>
+  <testcase name="testFFetchResponseWithMixedDataTypes()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.004"/>
+  <testcase name="testMalformedJsonHandling()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.003"/>
+  <testcase name="testToFFetchEntriesConversion()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.002"/>
+  <testcase name="testBasicFFetchResponseDeserialization()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.001"/>
+  <testcase name="testFFetchResponseWithEmptyDataArray()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.001"/>
+  <testcase name="testInvalidDataTypes()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.001"/>
+  <testcase name="testLargeNumberHandling()" classname="com.terragon.kotlinffetch.FFetchResponseTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

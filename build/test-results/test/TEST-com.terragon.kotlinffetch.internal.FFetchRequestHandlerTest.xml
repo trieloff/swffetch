@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2025-07-22T16:10:22" hostname="e2b.local" time="0.382">
+  <properties/>
+  <testcase name="testLargeDatasetPagination()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.202"/>
+  <testcase name="testContextTotalIsUpdatedAfterFirstRequest()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.017"/>
+  <testcase name="testMultiPagePagination()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.017"/>
+  <testcase name="testSinglePageRequest()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.01"/>
+  <testcase name="testHttp404ErrorHandling()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.008"/>
+  <testcase name="testOffsetLimitParameterBuilding()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.01"/>
+  <testcase name="testMissingRequiredFieldsInResponse()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.007"/>
+  <testcase name="testEmptyDataArrayHandling()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.008"/>
+  <testcase name="testTotalCountHandlingAndEarlyTermination()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.013"/>
+  <testcase name="testNetworkErrorHandling()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.006"/>
+  <testcase name="testHttp500ErrorHandling()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.011"/>
+  <testcase name="testCacheConfigurationPassedToHttpClient()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.008"/>
+  <testcase name="testUrlEncodingOfSpecialCharacters()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.01"/>
+  <testcase name="testUrlWithExistingQueryParameters()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.008"/>
+  <testcase name="testSheetParameterInclusion()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.011"/>
+  <testcase name="testMalformedJsonResponseHandling()" classname="com.terragon.kotlinffetch.internal.FFetchRequestHandlerTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -38,8 +38,8 @@ object Examples {
     /// Example: Map and filter entries
 <span class="nc" id="L39">    fun mapAndFilterEntries() = runBlocking {</span>
 <span class="nc" id="L40">        ffetch(&quot;https://example.com/query-index.json&quot;)</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">            .map&lt;String?&gt; { it[&quot;title&quot;] as? String }</span>
-<span class="nc bnc" id="L42" title="All 4 branches missed.">            .filter { it?.contains(&quot;Kotlin&quot;) == true }</span>
+<span class="nc bnc" id="L41" title="All 4 branches missed.">            .map&lt;String?&gt; { it[&quot;title&quot;] as? String }</span>
+<span class="nc bnc" id="L42" title="All 6 branches missed.">            .filter { it?.contains(&quot;Kotlin&quot;) == true }</span>
 <span class="nc" id="L43">            .collect { title -&gt;</span>
 <span class="nc bnc" id="L44" title="All 2 branches missed.">                println(title ?: &quot;&quot;)</span>
 <span class="nc" id="L45">            }</span>
@@ -145,4 +145,4 @@ object Examples {
 <span class="nc" id="L145">            .all()</span>
 <span class="nc" id="L146">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
