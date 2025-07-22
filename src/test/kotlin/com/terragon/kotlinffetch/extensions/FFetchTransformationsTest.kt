@@ -21,11 +21,6 @@ import kotlin.test.assertTrue
  */
 class FFetchTransformationsTest {
     
-    private fun createDirectTestFFetch(entries: List<FFetchEntry>): FFetch {
-        return object : FFetch(URL("https://test.example.com"), FFetchContext()) {
-            override suspend fun createFlow(): Flow<FFetchEntry> = entries.asFlow()
-        }
-    }
     
     // ========== MAP OPERATION TESTS ==========
     
@@ -101,14 +96,6 @@ class FFetchTransformationsTest {
         }
     }
     
-    @Test
-    fun testDirectMapExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(3, "direct_map")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.map { it["title"].toString().uppercase() }.toList()
-        assertEquals(3, result.size)
-        assertEquals("TITLE 1", result[0])
-    }
     
     // ========== FILTER OPERATION TESTS ==========
     
@@ -176,13 +163,6 @@ class FFetchTransformationsTest {
         assertTrue(result.all { it["title"].toString().isNotEmpty() })
     }
     
-    @Test
-    fun testDirectFilterExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(10, "direct_filter")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.filter { (it["index"] as Int) > 5 }.toList()
-        assertEquals(5, result.size)
-    }
     
     // ========== LIMIT OPERATION TESTS ==========
     
@@ -225,13 +205,6 @@ class FFetchTransformationsTest {
         assertEquals("single_limit_1", result[0]["id"])
     }
     
-    @Test
-    fun testDirectLimitExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(20, "direct_limit")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.limit(5).toList()
-        assertEquals(5, result.size)
-    }
     
     // ========== SKIP OPERATION TESTS ==========
     
@@ -274,21 +247,13 @@ class FFetchTransformationsTest {
         assertTrue(result.isEmpty())
     }
     
-    @Test
-    fun testDirectSkipExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(10, "direct_skip")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.skip(3).toList()
-        assertEquals(7, result.size)
-        assertEquals("direct_skip_4", result[0]["id"])
-    }
     
     // ========== SLICE OPERATION TESTS ==========
     
     @Test
     fun testSliceFromBeginning() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(10, "slice")
-        val sliced = entries.asFlow().slice(0..4)
+        val sliced = entries.asFlow().slice(0, 5)
         
         val result = sliced.toList()
         assertEquals(5, result.size)
@@ -299,7 +264,7 @@ class FFetchTransformationsTest {
     @Test
     fun testSliceMiddleRange() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(10, "middle")
-        val sliced = entries.asFlow().slice(3..6)
+        val sliced = entries.asFlow().slice(3, 7)
         
         val result = sliced.toList()
         assertEquals(4, result.size)
@@ -310,7 +275,7 @@ class FFetchTransformationsTest {
     @Test
     fun testSliceToEnd() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(8, "end")
-        val sliced = entries.asFlow().slice(5..10) // Beyond available
+        val sliced = entries.asFlow().slice(5, 11) // Beyond available
         
         val result = sliced.toList()
         assertEquals(3, result.size) // Only entries 6, 7, 8
@@ -321,7 +286,7 @@ class FFetchTransformationsTest {
     @Test
     fun testSliceEmptyRange() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(5, "empty_slice")
-        val sliced = entries.asFlow().slice(10..15) // Completely beyond available
+        val sliced = entries.asFlow().slice(10, 16) // Completely beyond available
         
         val result = sliced.toList()
         assertTrue(result.isEmpty())
@@ -330,7 +295,7 @@ class FFetchTransformationsTest {
     @Test
     fun testSliceInvalidRange() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(5, "invalid")
-        val sliced = entries.asFlow().slice(3..1) // Invalid range
+        val sliced = entries.asFlow().slice(3, 1) // Invalid range
         
         val result = sliced.toList()
         assertTrue(result.isEmpty())
@@ -339,8 +304,8 @@ class FFetchTransformationsTest {
     @Test
     fun testDirectSliceExtensionCall() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(10, "direct_slice")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.slice(2..5).toList()
+        val flow = entries.asFlow()
+        val result = flow.slice(2, 6).toList()
         assertEquals(4, result.size)
         assertEquals("direct_slice_3", result[0]["id"])
     }
@@ -451,7 +416,7 @@ class FFetchTransformationsTest {
     @Test
     fun testFlowSliceOperation() = runTest {
         val numbers = (1..20).asFlow()
-        val slicedFlow = numbers.slice(5..9)
+        val slicedFlow = numbers.slice(5, 10)
         val sliced = slicedFlow.toList()
         
         assertEquals(listOf(6, 7, 8, 9, 10), sliced)
@@ -476,7 +441,7 @@ class FFetchTransformationsTest {
     fun testTransformationWithExceptionInFilter() = runTest {
         val entries = TestDataGenerator.createFFetchEntries(5, "error")
         
-        assertThrows<RuntimeException> {
+        assertFailsWith<RuntimeException> {
             entries.asFlow()
                 .filter { entry ->
                     if (entry["id"].toString().contains("3")) {

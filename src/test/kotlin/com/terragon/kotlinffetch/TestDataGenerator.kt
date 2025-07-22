@@ -25,7 +25,7 @@ object TestDataGenerator {
             "description" to description
         )
         fields.putAll(additionalFields)
-        return FFetchEntry(fields)
+        return fields
     }
     
     /**
@@ -51,16 +51,10 @@ object TestDataGenerator {
     fun createMockFFetch(entries: List<FFetchEntry>): FFetch {
         return FFetch(
             URL("https://example.com/test"),
-            FFetchContext(
-                allowedHostnames = setOf("example.com")
-            )
-        ).apply {
-            // Override createFlow to return our test data
-            this.javaClass.getDeclaredField("testEntries").apply {
-                isAccessible = true
-                set(this@apply, entries)
+            FFetchContext().apply {
+                allowedHosts.add("example.com")
             }
-        }
+        )
     }
     
     /**

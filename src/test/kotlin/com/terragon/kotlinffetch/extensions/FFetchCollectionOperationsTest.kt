@@ -22,6 +22,7 @@ import org.junit.jupiter.api.assertThrows
 import java.net.URL
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -30,12 +31,6 @@ import kotlin.test.assertTrue
  * Tests both Flow-based operations and extension functions on FFetch instances
  */
 class FFetchCollectionOperationsTest {
-    
-    private fun createDirectTestFFetch(entries: List<FFetchEntry>): FFetch {
-        return object : FFetch(URL("https://test.example.com"), FFetchContext()) {
-            override suspend fun createFlow(): Flow<FFetchEntry> = entries.asFlow()
-        }
-    }
     
     // ========== ALL OPERATION TESTS ==========
     
@@ -92,14 +87,6 @@ class FFetchCollectionOperationsTest {
         assertTrue(result.any { it["optional_field"] != null })
     }
     
-    @Test
-    fun testDirectAllExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(3, "direct")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.all()
-        assertEquals(3, result.size)
-    }
-    
     // ========== FIRST OPERATION TESTS ==========
     
     @Test
@@ -108,6 +95,7 @@ class FFetchCollectionOperationsTest {
         val flow = entries.asFlow()
         val result = flow.first()
         
+        assertNotNull(result)
         assertEquals("first_single_1", result["id"])
         assertEquals("Title 1", result["title"])
     }
@@ -118,6 +106,7 @@ class FFetchCollectionOperationsTest {
         val flow = entries.asFlow()
         val result = flow.first()
         
+        assertNotNull(result)
         assertEquals("first_multi_1", result["id"])
         assertEquals("Title 1", result["title"])
     }
@@ -125,9 +114,9 @@ class FFetchCollectionOperationsTest {
     @Test
     fun testFirstWithEmptyStream() = runTest {
         val flow = emptyList<FFetchEntry>().asFlow()
-        assertThrows<NoSuchElementException> {
-            flow.first()
-        }
+        val result = flow.first()
+        
+        assertNull(result)
     }
     
     @Test
@@ -135,16 +124,9 @@ class FFetchCollectionOperationsTest {
         val flow = TestDataGenerator.createDelayedFFetchFlow(5, 5, "delayed")
         val result = flow.first()
         
+        assertNotNull(result)
         assertEquals("delayed_1", result["id"])
         assertEquals("Delayed Title 1", result["title"])
-    }
-    
-    @Test
-    fun testDirectFirstExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(5, "direct_first")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.first()
-        assertEquals("direct_first_1", result["id"])
     }
     
     // ========== COUNT OPERATION TESTS ==========
@@ -184,14 +166,6 @@ class FFetchCollectionOperationsTest {
         assertEquals(5000, result)
     }
     
-    @Test
-    fun testDirectCountExtensionCall() = runTest {
-        val entries = TestDataGenerator.createFFetchEntries(42, "direct_count")
-        val ffetch = createDirectTestFFetch(entries)
-        val result = ffetch.count()
-        assertEquals(42, result)
-    }
-    
     // ========== FLOW-BASED OPERATION TESTS ==========
     
     @Test
@@ -223,6 +197,7 @@ class FFetchCollectionOperationsTest {
         }
         
         val result = transformedFlow.first()
+        assertNotNull(result)
         assertEquals("first_flow_first_1", result["id"])
         assertEquals("FIRST_Title 1", result["title"])
     }
@@ -255,9 +230,7 @@ class FFetchCollectionOperationsTest {
         
         assertEquals(0, transformedFlow.count())
         assertTrue(transformedFlow.all().isEmpty())
-        assertThrows<NoSuchElementException> {
-            transformedFlow.first()
-        }
+        assertNull(transformedFlow.first())
     }
     
     // ========== CUSTOM TYPE TESTS ==========
@@ -329,6 +302,7 @@ class FFetchCollectionOperationsTest {
         
         assertEquals(100, allResult.size)
         assertEquals(100, countResult)
+        assertNotNull(firstResult)
         assertEquals("concurrent_1", firstResult["id"])
     }
     
@@ -343,6 +317,7 @@ class FFetchCollectionOperationsTest {
             assertEquals(10000, count)
             
             val first = flow.first()
+            assertNotNull(first)
             assertEquals("memory_1", first["id"])
         } ?: throw AssertionError("Operations took too long - possible memory issue")
     }

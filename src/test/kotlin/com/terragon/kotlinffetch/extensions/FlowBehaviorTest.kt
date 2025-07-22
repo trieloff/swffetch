@@ -207,7 +207,7 @@ class FlowBehaviorTest {
         
         assertEquals(100, count)
         assertEquals(100, all.size)
-        assertEquals("concurrent_1", first["id"])
+        assertEquals("concurrent_1", first!!["id"])
     }
     
     @Test
