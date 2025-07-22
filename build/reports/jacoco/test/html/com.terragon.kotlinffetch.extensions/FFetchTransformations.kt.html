@@ -9,6 +9,8 @@ package com.terragon.kotlinffetch.extensions
 
 import com.terragon.kotlinffetch.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.map as flowMap
+import kotlinx.coroutines.flow.filter as flowFilter
 import kotlinx.coroutines.sync.Semaphore
 import java.net.URL
 
@@ -16,56 +18,56 @@ import java.net.URL
 
 /// Transform entries using the provided function
 fun &lt;T&gt; FFetch.map(transform: FFetchTransform&lt;FFetchEntry, T&gt;): Flow&lt;T&gt; {
-<span class="nc" id="L19">    return asFlow().map { entry -&gt; transform(entry) }</span>
+<span class="nc" id="L21">    return asFlow().map { entry -&gt; transform(entry) }</span>
 }
 
 /// Filter entries using the provided predicate
 fun FFetch.filter(predicate: FFetchPredicate&lt;FFetchEntry&gt;): FFetch {
-<span class="nc" id="L24">    val filteredFlow = asFlow().filter { entry -&gt; predicate(entry) }</span>
-<span class="nc" id="L25">    return FFetch(url, context, filteredFlow)</span>
+<span class="nc" id="L26">    val filteredFlow = asFlow().filter { entry -&gt; predicate(entry) }</span>
+<span class="nc" id="L27">    return FFetch(url, context, filteredFlow)</span>
 }
 
 /// Limit the number of entries returned
 fun FFetch.limit(count: Int): FFetch {
-<span class="nc" id="L30">    val limitedFlow = asFlow().take(count)</span>
-<span class="nc" id="L31">    return FFetch(url, context, limitedFlow)</span>
+<span class="nc" id="L32">    val limitedFlow = asFlow().take(count)</span>
+<span class="nc" id="L33">    return FFetch(url, context, limitedFlow)</span>
 }
 
 /// Skip a number of entries from the beginning
 fun FFetch.skip(count: Int): FFetch {
-<span class="nc" id="L36">    val skippedFlow = asFlow().drop(count)</span>
-<span class="nc" id="L37">    return FFetch(url, context, skippedFlow)</span>
+<span class="nc" id="L38">    val skippedFlow = asFlow().drop(count)</span>
+<span class="nc" id="L39">    return FFetch(url, context, skippedFlow)</span>
 }
 
 /// Extract a slice of entries
 fun FFetch.slice(start: Int, end: Int): FFetch {
-<span class="nc" id="L42">    return skip(start).limit(end - start)</span>
+<span class="nc" id="L44">    return skip(start).limit(end - start)</span>
 }
 
 // MARK: - Transformation Operations for Mapped Flows
 
 /// Transform mapped entries using the provided function
 fun &lt;T, U&gt; Flow&lt;T&gt;.map(transform: suspend (T) -&gt; U): Flow&lt;U&gt; {
-<span class="nc" id="L49">    return map { entry -&gt; transform(entry) }</span>
+<span class="fc" id="L51">    return flowMap(transform)</span>
 }
 
 /// Filter transformed entries using the provided predicate
 fun &lt;T&gt; Flow&lt;T&gt;.filter(predicate: suspend (T) -&gt; Boolean): Flow&lt;T&gt; {
-<span class="nc" id="L54">    return filter { entry -&gt; predicate(entry) }</span>
+<span class="fc" id="L56">    return flowFilter(predicate)</span>
 }
 
 /// Limit the number of transformed entries returned
 fun &lt;T&gt; Flow&lt;T&gt;.limit(count: Int): Flow&lt;T&gt; {
-<span class="nc" id="L59">    return take(count)</span>
+<span class="fc" id="L61">    return take(count)</span>
 }
 
 /// Skip a number of transformed entries from the beginning
 fun &lt;T&gt; Flow&lt;T&gt;.skip(count: Int): Flow&lt;T&gt; {
-<span class="nc" id="L64">    return drop(count)</span>
+<span class="fc" id="L66">    return drop(count)</span>
 }
 
 /// Extract a slice of transformed entries
 fun &lt;T&gt; Flow&lt;T&gt;.slice(start: Int, end: Int): Flow&lt;T&gt; {
-<span class="nc" id="L69">    return skip(start).limit(end - start)</span>
+<span class="fc" id="L71">    return skip(start).limit(end - start)</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

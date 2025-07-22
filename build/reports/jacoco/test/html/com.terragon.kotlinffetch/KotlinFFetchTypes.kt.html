@@ -30,70 +30,70 @@ import org.jsoup.nodes.Document
 typealias FFetchEntry = Map&lt;String, Any?&gt;
 
 /// Represents the JSON response structure from AEM indices
-<span class="pc bpc" id="L33" title="2 of 10 branches missed.">@Serializable</span>
-<span class="fc" id="L34">data class FFetchResponse(</span>
+<span class="nc bnc" id="L33" title="All 10 branches missed.">@Serializable</span>
+<span class="nc" id="L34">data class FFetchResponse(</span>
     /// Total number of entries available
-<span class="fc" id="L36">    val total: Int,</span>
+<span class="nc" id="L36">    val total: Int,</span>
     
     /// Current offset in the result set
-<span class="fc" id="L39">    val offset: Int,</span>
+<span class="nc" id="L39">    val offset: Int,</span>
     
     /// Maximum number of entries requested
-<span class="fc" id="L42">    val limit: Int,</span>
+<span class="nc" id="L42">    val limit: Int,</span>
     
     /// Array of data entries
-<span class="fc" id="L45">    val data: List&lt;JsonObject&gt;</span>
+<span class="nc" id="L45">    val data: List&lt;JsonObject&gt;</span>
 ) {
     fun toFFetchEntries(): List&lt;FFetchEntry&gt; {
-<span class="fc" id="L48">        return data.map { jsonObject -&gt;</span>
-<span class="fc" id="L49">            jsonObject.entries.associate { (key, value) -&gt;</span>
-<span class="fc" id="L50">                key to value.toString().removeSurrounding(&quot;\&quot;&quot;)</span>
+<span class="nc" id="L48">        return data.map { jsonObject -&gt;</span>
+<span class="nc" id="L49">            jsonObject.entries.associate { (key, value) -&gt;</span>
+<span class="nc" id="L50">                key to value.toString().removeSurrounding(&quot;\&quot;&quot;)</span>
             }
         }
     }
-<span class="fc" id="L54">}</span>
+<span class="nc" id="L54">}</span>
 
 /// Errors that can occur during FFetch operations
-<span class="fc" id="L57">sealed class FFetchError(message: String, cause: Throwable? = null) : Exception(message, cause) {</span>
-<span class="fc" id="L58">    class InvalidURL(url: String) : FFetchError(&quot;Invalid URL: $url&quot;)</span>
-<span class="fc" id="L59">    class NetworkError(cause: Throwable) : FFetchError(&quot;Network error: ${cause.message}&quot;, cause)</span>
+<span class="nc" id="L57">sealed class FFetchError(message: String, cause: Throwable? = null) : Exception(message, cause) {</span>
+<span class="nc" id="L58">    class InvalidURL(url: String) : FFetchError(&quot;Invalid URL: $url&quot;)</span>
+<span class="nc" id="L59">    class NetworkError(cause: Throwable) : FFetchError(&quot;Network error: ${cause.message}&quot;, cause)</span>
 <span class="nc" id="L60">    class DecodingError(cause: Throwable) : FFetchError(&quot;Decoding error: ${cause.message}&quot;, cause)</span>
 <span class="nc" id="L61">    object InvalidResponse : FFetchError(&quot;Invalid response format&quot;)</span>
-<span class="fc" id="L62">    object DocumentNotFound : FFetchError(&quot;Document not found&quot;)</span>
+<span class="nc" id="L62">    object DocumentNotFound : FFetchError(&quot;Document not found&quot;)</span>
 <span class="nc" id="L63">    class OperationFailed(message: String) : FFetchError(&quot;Operation failed: $message&quot;)</span>
-<span class="fc" id="L64">}</span>
+<span class="nc" id="L64">}</span>
 
 /// Cache configuration for FFetch requests
-<span class="fc" id="L67">data class FFetchCacheConfig(</span>
+<span class="nc" id="L67">data class FFetchCacheConfig(</span>
     /// Whether to ignore cache and always fetch from server
-<span class="fc" id="L69">    val noCache: Boolean = false,</span>
+<span class="nc" id="L69">    val noCache: Boolean = false,</span>
     
     /// Whether to only use cache and never fetch from server
-<span class="fc" id="L72">    val cacheOnly: Boolean = false,</span>
+<span class="nc" id="L72">    val cacheOnly: Boolean = false,</span>
     
     /// Whether to use cache if available, otherwise fetch from server
-<span class="fc" id="L75">    val cacheElseLoad: Boolean = false,</span>
+<span class="nc" id="L75">    val cacheElseLoad: Boolean = false,</span>
     
     /// Maximum age in seconds for cached responses
-<span class="pc" id="L78">    val maxAge: Long? = null,</span>
+<span class="nc" id="L78">    val maxAge: Long? = null,</span>
     
     /// Whether to ignore server cache control headers
-<span class="pc" id="L81">    val ignoreServerCacheControl: Boolean = false</span>
+<span class="nc" id="L81">    val ignoreServerCacheControl: Boolean = false</span>
 ) {
     companion object {
         /// Default cache configuration that respects HTTP cache control headers
-<span class="fc" id="L85">        val Default = FFetchCacheConfig()</span>
+<span class="nc" id="L85">        val Default = FFetchCacheConfig()</span>
         
         /// Cache configuration that ignores cache and always fetches from server
-<span class="fc" id="L88">        val NoCache = FFetchCacheConfig(noCache = true)</span>
+<span class="nc" id="L88">        val NoCache = FFetchCacheConfig(noCache = true)</span>
         
         /// Cache configuration that only uses cache and never fetches from server
-<span class="pc" id="L91">        val CacheOnly = FFetchCacheConfig(cacheOnly = true)</span>
+<span class="nc" id="L91">        val CacheOnly = FFetchCacheConfig(cacheOnly = true)</span>
         
         /// Cache configuration that uses cache if available, otherwise fetches from server
-<span class="pc" id="L94">        val CacheElseLoad = FFetchCacheConfig(cacheElseLoad = true)</span>
+<span class="nc" id="L94">        val CacheElseLoad = FFetchCacheConfig(cacheElseLoad = true)</span>
     }
-<span class="fc" id="L96">}</span>
+<span class="nc" id="L96">}</span>
 
 /// Interface for HTTP client abstraction
 interface FFetchHTTPClient {
@@ -106,7 +106,7 @@ interface FFetchHTMLParser {
 }
 
 /// Default HTTP client implementation using Ktor
-<span class="fc" id="L109">class DefaultFFetchHTTPClient(private val client: HttpClient) : FFetchHTTPClient {</span>
+<span class="nc" id="L109">class DefaultFFetchHTTPClient(private val client: HttpClient) : FFetchHTTPClient {</span>
 <span class="nc" id="L110">    override suspend fun fetch(url: String, cacheConfig: FFetchCacheConfig): Pair&lt;String, HttpResponse&gt; {</span>
 <span class="nc" id="L111">        try {</span>
 <span class="nc" id="L112">            val response = client.get(url)</span>
@@ -119,7 +119,7 @@ interface FFetchHTMLParser {
 }
 
 /// Default HTML parser implementation using Jsoup
-<span class="fc" id="L122">class DefaultFFetchHTMLParser : FFetchHTMLParser {</span>
+<span class="nc" id="L122">class DefaultFFetchHTMLParser : FFetchHTMLParser {</span>
     override fun parse(html: String): Document {
 <span class="nc" id="L124">        return try {</span>
 <span class="nc" id="L125">            Jsoup.parse(html)</span>
@@ -130,36 +130,36 @@ interface FFetchHTMLParser {
 }
 
 /// Configuration context for FFetch operations
-<span class="fc" id="L133">data class FFetchContext(</span>
+<span class="nc" id="L133">data class FFetchContext(</span>
     /// Size of chunks to fetch during pagination
-<span class="pc" id="L135">    var chunkSize: Int = 255,</span>
+<span class="nc" id="L135">    var chunkSize: Int = 255,</span>
     
     /// Whether to reload cache (deprecated - use cacheConfig instead)
-<span class="pc" id="L138">    var cacheReload: Boolean = false,</span>
+<span class="nc" id="L138">    var cacheReload: Boolean = false,</span>
     
     /// Cache configuration for HTTP requests
-<span class="pc" id="L141">    var cacheConfig: FFetchCacheConfig = FFetchCacheConfig.Default,</span>
+<span class="nc" id="L141">    var cacheConfig: FFetchCacheConfig = FFetchCacheConfig.Default,</span>
     
     /// Name of the sheet to query (for multi-sheet responses)
-<span class="pc" id="L144">    var sheetName: String? = null,</span>
+<span class="nc" id="L144">    var sheetName: String? = null,</span>
     
     /// HTTP client for making requests
-<span class="pc" id="L147">    var httpClient: FFetchHTTPClient = DefaultFFetchHTTPClient(HttpClient()),</span>
+<span class="nc" id="L147">    var httpClient: FFetchHTTPClient = DefaultFFetchHTTPClient(HttpClient()),</span>
     
     /// HTML parser for parsing documents
-<span class="pc" id="L150">    var htmlParser: FFetchHTMLParser = DefaultFFetchHTMLParser(),</span>
+<span class="nc" id="L150">    var htmlParser: FFetchHTMLParser = DefaultFFetchHTMLParser(),</span>
     
     /// Total number of entries (set after first request)
-<span class="fc" id="L153">    var total: Int? = null,</span>
+<span class="nc" id="L153">    var total: Int? = null,</span>
     
     /// Maximum number of concurrent operations
-<span class="pc" id="L156">    var maxConcurrency: Int = 5,</span>
+<span class="nc" id="L156">    var maxConcurrency: Int = 5,</span>
     
     /// Set of allowed hostnames for document following (security feature)
     /// By default, only the hostname of the initial request is allowed
     /// Use &quot;*&quot; to allow all hostnames
-<span class="pc" id="L161">    var allowedHosts: MutableSet&lt;String&gt; = mutableSetOf()</span>
-<span class="fc" id="L162">)</span>
+<span class="nc" id="L161">    var allowedHosts: MutableSet&lt;String&gt; = mutableSetOf()</span>
+<span class="nc" id="L162">)</span>
 
 /// Transform function type for map operations
 typealias FFetchTransform&lt;Input, Output&gt; = suspend (Input) -&gt; Output

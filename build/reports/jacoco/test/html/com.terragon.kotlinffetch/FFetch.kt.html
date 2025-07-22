@@ -15,31 +15,31 @@ import kotlinx.coroutines.flow.flow
 import java.net.URL
 
 /// Main FFetch class for asynchronous data fetching
-<span class="pc" id="L18">class FFetch(</span>
-<span class="fc" id="L19">    internal val url: URL,</span>
-<span class="pc" id="L20">    internal val context: FFetchContext = FFetchContext(),</span>
-<span class="pc" id="L21">    internal val upstream: Flow&lt;FFetchEntry&gt;? = null</span>
+<span class="nc" id="L18">class FFetch(</span>
+<span class="nc" id="L19">    internal val url: URL,</span>
+<span class="nc" id="L20">    internal val context: FFetchContext = FFetchContext(),</span>
+<span class="nc" id="L21">    internal val upstream: Flow&lt;FFetchEntry&gt;? = null</span>
 ) {
     
     /// Initialize with URL and default context
-<span class="fc" id="L25">    constructor(url: URL) : this(url, FFetchContext(), null)</span>
+<span class="nc" id="L25">    constructor(url: URL) : this(url, FFetchContext(), null)</span>
     
     /// Initialize FFetch with a URL string
     /// Throws: FFetchError.InvalidURL if the URL is invalid
-<span class="fc" id="L29">    constructor(url: String) : this(</span>
-<span class="fc" id="L30">        try { </span>
-<span class="fc" id="L31">            URL(url) </span>
-<span class="fc" id="L32">        } catch (e: Exception) { </span>
-<span class="fc" id="L33">            throw FFetchError.InvalidURL(url) </span>
+<span class="nc" id="L29">    constructor(url: String) : this(</span>
+<span class="nc" id="L30">        try { </span>
+<span class="nc" id="L31">            URL(url) </span>
+<span class="nc" id="L32">        } catch (e: Exception) { </span>
+<span class="nc" id="L33">            throw FFetchError.InvalidURL(url) </span>
         }
-<span class="fc" id="L35">    )</span>
+<span class="nc" id="L35">    )</span>
     
-<span class="fc" id="L37">    init {</span>
+<span class="nc" id="L37">    init {</span>
         // Set the initial hostname as allowed if no hosts are explicitly allowed
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (context.allowedHosts.isEmpty()) {</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">            url.host?.let { context.allowedHosts.add(it) }</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (context.allowedHosts.isEmpty()) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            url.host?.let { context.allowedHosts.add(it) }</span>
         }
-<span class="fc" id="L42">    }</span>
+<span class="nc" id="L42">    }</span>
     
     /// Create the main data flow
     fun asFlow(): Flow&lt;FFetchEntry&gt; {
@@ -67,35 +67,35 @@ import java.net.URL
 
 /// Set custom chunk size for pagination
 fun FFetch.chunks(size: Int): FFetch {
-<span class="fc" id="L70">    val newContext = context.copy(chunkSize = size)</span>
-<span class="fc" id="L71">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L70">    val newContext = context.copy(chunkSize = size)</span>
+<span class="nc" id="L71">    return FFetch(url, newContext, upstream)</span>
 }
 
 /// Select a specific sheet (for spreadsheet-like data sources)
 fun FFetch.sheet(name: String): FFetch {
-<span class="fc" id="L76">    val newContext = context.copy(sheetName = name)</span>
-<span class="fc" id="L77">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L76">    val newContext = context.copy(sheetName = name)</span>
+<span class="nc" id="L77">    return FFetch(url, newContext, upstream)</span>
 }
 
 /// Set maximum concurrency for parallel operations
 fun FFetch.maxConcurrency(limit: Int): FFetch {
-<span class="fc" id="L82">    val newContext = context.copy(maxConcurrency = limit)</span>
-<span class="fc" id="L83">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L82">    val newContext = context.copy(maxConcurrency = limit)</span>
+<span class="nc" id="L83">    return FFetch(url, newContext, upstream)</span>
 }
 
 /// Configure cache behavior for requests
 fun FFetch.cache(config: FFetchCacheConfig): FFetch {
-<span class="fc" id="L88">    val newContext = context.copy(</span>
-<span class="fc" id="L89">        cacheConfig = config,</span>
+<span class="nc" id="L88">    val newContext = context.copy(</span>
+<span class="nc" id="L89">        cacheConfig = config,</span>
         // Update cacheReload for backward compatibility
-<span class="fc" id="L91">        cacheReload = config.noCache</span>
+<span class="nc" id="L91">        cacheReload = config.noCache</span>
     )
-<span class="fc" id="L93">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L93">    return FFetch(url, newContext, upstream)</span>
 }
 
 /// Force cache reload for requests
 fun FFetch.reloadCache(): FFetch {
-<span class="fc" id="L98">    return cache(FFetchCacheConfig.NoCache)</span>
+<span class="nc" id="L98">    return cache(FFetchCacheConfig.NoCache)</span>
 }
 
 /// Enable cache reloading (backward compatibility)
@@ -127,7 +127,7 @@ fun FFetch.withHTMLParser(parser: FFetchHTMLParser): FFetch {
 /// Returns: FFetch instance
 /// Throws: FFetchError.InvalidURL if the URL is invalid
 fun ffetch(url: String): FFetch {
-<span class="fc" id="L130">    return FFetch(url)</span>
+<span class="nc" id="L130">    return FFetch(url)</span>
 }
 
 /// Create FFetch instance from URL

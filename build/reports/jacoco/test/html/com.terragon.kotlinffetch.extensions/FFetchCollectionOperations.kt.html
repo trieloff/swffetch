@@ -35,16 +35,16 @@ suspend fun FFetch.count(): Int {
 
 /// Collect all transformed entries into a list
 suspend fun &lt;T&gt; Flow&lt;T&gt;.all(): List&lt;T&gt; {
-<span class="nc" id="L38">    return toList()</span>
+<span class="fc" id="L38">    return toList()</span>
 }
 
 /// Get the first transformed entry
 suspend fun &lt;T&gt; Flow&lt;T&gt;.first(): T? {
-<span class="nc" id="L43">    return firstOrNull()</span>
+<span class="fc" id="L43">    return firstOrNull()</span>
 }
 
 /// Count the total number of transformed entries
 suspend fun &lt;T&gt; Flow&lt;T&gt;.count(): Int {
-<span class="nc" id="L48">    return fold(0) { count, _ -&gt; count + 1 }</span>
+<span class="fc" id="L48">    return fold(0) { count, _ -&gt; count + 1 }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

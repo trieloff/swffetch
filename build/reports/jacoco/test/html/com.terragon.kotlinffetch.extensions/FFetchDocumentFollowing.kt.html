@@ -203,17 +203,17 @@ private fun FFetch.isHostnameAllowed(url: URL): Boolean {
 
 /// Allow document following from specific hostname
 fun FFetch.allow(hostname: String): FFetch {
-<span class="fc" id="L206">    val newContext = context.copy(allowedHosts = context.allowedHosts.toMutableSet().apply {</span>
-<span class="fc" id="L207">        add(hostname)</span>
-<span class="fc" id="L208">    })</span>
-<span class="fc" id="L209">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L206">    val newContext = context.copy(allowedHosts = context.allowedHosts.toMutableSet().apply {</span>
+<span class="nc" id="L207">        add(hostname)</span>
+<span class="nc" id="L208">    })</span>
+<span class="nc" id="L209">    return FFetch(url, newContext, upstream)</span>
 }
 
 /// Allow document following from multiple hostnames
 fun FFetch.allow(hostnames: List&lt;String&gt;): FFetch {
-<span class="fc" id="L214">    val newContext = context.copy(allowedHosts = context.allowedHosts.toMutableSet().apply {</span>
-<span class="fc" id="L215">        addAll(hostnames)</span>
-<span class="fc" id="L216">    })</span>
-<span class="fc" id="L217">    return FFetch(url, newContext, upstream)</span>
+<span class="nc" id="L214">    val newContext = context.copy(allowedHosts = context.allowedHosts.toMutableSet().apply {</span>
+<span class="nc" id="L215">        addAll(hostnames)</span>
+<span class="nc" id="L216">    })</span>
+<span class="nc" id="L217">    return FFetch(url, newContext, upstream)</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

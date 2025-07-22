@@ -261,17 +261,27 @@ class FFetchCollectionOperationsTest {
     fun testCollectionOperationsWithFailingFlow() = runTest {
         val failingFlow = TestDataGenerator.createFailingFFetchFlow(3, "failing")
         
+        // Test that the flow fails when fully consumed
         assertFailsWith<RuntimeException> {
-            failingFlow.all()
+            failingFlow.toList() // Force consumption of entire flow
         }
         
+        // Test individual operations that also consume the flow
+        val newFailingFlow = TestDataGenerator.createFailingFFetchFlow(3, "failing2")
         assertFailsWith<RuntimeException> {
-            failingFlow.count()
+            newFailingFlow.all()
         }
         
+        val newFailingFlow2 = TestDataGenerator.createFailingFFetchFlow(3, "failing3")
         assertFailsWith<RuntimeException> {
-            failingFlow.first()
+            newFailingFlow2.count()
         }
+        
+        // First should succeed since it only takes the first element
+        val newFailingFlow3 = TestDataGenerator.createFailingFFetchFlow(3, "failing4")
+        val result = newFailingFlow3.first()
+        assertNotNull(result)
+        assertEquals("failing4_1", result!!["id"])
     }
     
     @Test
