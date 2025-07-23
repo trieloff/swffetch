@@ -1,6 +1,7 @@
 # SwiftFFetch
 
-[![97% Vibe_Coded](https://img.shields.io/badge/97%25-Vibe_Coded-ff69b4?style=for-the-badge&logo=zedindustries&logoColor=white)](https://github.com/trieloff/vibe-coded-badge-action)
+[![96% Vibe_Coded](https://img.shields.io/badge/96%25-Vibe_Coded-ff69b4?style=for-the-badge&logo=zedindustries&logoColor=white)](https://github.com/trieloff/vibe-coded-badge-action)
+
 [![codecov](https://img.shields.io/codecov/c/github/trieloff/swffetch?token=SROMISB0K5&style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/trieloff/swffetch)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/trieloff/swffetch/test.yaml?style=for-the-badge&logo=github)](https://github.com/trieloff/swffetch/actions)
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org)
