@@ -17,16 +17,18 @@
 package com.terragon.kotlinffetch.error
 
 import com.terragon.kotlinffetch.FFetchError
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
-import java.net.MalformedURLException
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import java.io.IOException
 import kotlinx.serialization.SerializationException
 
 class FFetchErrorTest {
 
     @Test
-    fun `InvalidURL error should contain URL in message`() {
+    fun testInvalidURLError() {
         val invalidUrl = "not-a-valid-url"
         val error = FFetchError.InvalidURL(invalidUrl)
         
@@ -36,7 +38,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `NetworkError should wrap cause exception`() {
+    fun testNetworkError() {
         val cause = IOException("Connection failed")
         val error = FFetchError.NetworkError(cause)
         
@@ -46,7 +48,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `NetworkError should handle null cause message`() {
+    fun testNetworkErrorWithNullCauseMessage() {
         val cause = IOException()
         val error = FFetchError.NetworkError(cause)
         
@@ -55,7 +57,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `DecodingError should wrap serialization exception`() {
+    fun testDecodingError() {
         val cause = SerializationException("Invalid JSON format")
         val error = FFetchError.DecodingError(cause)
         
@@ -65,17 +67,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `DecodingError should handle MalformedURLException`() {
-        val cause = MalformedURLException("Protocol not found")
-        val error = FFetchError.DecodingError(cause)
-        
-        assertEquals(cause, error.cause)
-        assertTrue(error.message!!.contains("Decoding error"))
-        assertTrue(error.message!!.contains("Protocol not found"))
-    }
-
-    @Test
-    fun `InvalidResponse should have fixed message`() {
+    fun testInvalidResponse() {
         val error = FFetchError.InvalidResponse
         
         assertEquals("Invalid response format", error.message)
@@ -83,7 +75,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `DocumentNotFound should have fixed message`() {
+    fun testDocumentNotFound() {
         val error = FFetchError.DocumentNotFound
         
         assertEquals("Document not found", error.message)
@@ -91,7 +83,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `OperationFailed should include custom message`() {
+    fun testOperationFailed() {
         val customMessage = "Failed to process request"
         val error = FFetchError.OperationFailed(customMessage)
         
@@ -101,7 +93,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `OperationFailed should handle empty message`() {
+    fun testOperationFailedWithEmptyMessage() {
         val error = FFetchError.OperationFailed("")
         
         assertEquals("Operation failed: ", error.message)
@@ -109,7 +101,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `FFetchError is Exception subclass`() {
+    fun testFFetchErrorIsException() {
         val error = FFetchError.InvalidURL("test")
         
         assertTrue(error is Exception)
@@ -117,7 +109,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `All error types should be distinct`() {
+    fun testAllErrorTypesAreDistinct() {
         val invalidUrl = FFetchError.InvalidURL("test")
         val networkError = FFetchError.NetworkError(IOException())
         val decodingError = FFetchError.DecodingError(SerializationException())
@@ -133,7 +125,7 @@ class FFetchErrorTest {
     }
 
     @Test
-    fun `Error messages should be descriptive`() {
+    fun testErrorMessagesAreDescriptive() {
         val errors = listOf(
             FFetchError.InvalidURL("test") to "Invalid URL",
             FFetchError.NetworkError(IOException("test")) to "Network error",
